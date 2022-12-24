@@ -1,5 +1,7 @@
 print("Ciao ciao")
 
-print("kek")
+print("kekkerz")
 
-print("lmao")
+print("lmaoing")
+
+print("autistic screeching")
