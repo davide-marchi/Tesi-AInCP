@@ -10,8 +10,9 @@ from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algor
 
 
 # Creating dataframe
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/data/'
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/data/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/data/'
+
 series = []
 for i in range (1,61):
     df = pd.read_csv(folder + str(i) + '_AHA_1sec.csv')
@@ -19,7 +20,8 @@ for i in range (1,61):
     magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
     magnitude_ND = np.sqrt(np.square(df['x_ND']) + np.square(df['y_ND']) + np.square(df['z_ND']))
     # Concat
-    series.append(pd.concat([magnitude_D, magnitude_ND], ignore_index = True))
+    magnitude_concat = pd.concat([magnitude_D[:600], magnitude_ND[:600]], ignore_index = True)
+    series.append(magnitude_concat)
 
 
 # Create a DataFrame with a single column of Series objects
@@ -29,22 +31,19 @@ print(type(X))
 print(X)
 
 k_means = TimeSeriesKMeans(
-    n_clusters=2,  # Number of desired centers
-    init_algorithm="random",  # Center initialisation technique
+    n_clusters=8,  # Number of desired centers
+    init_algorithm="kmeans++",  # Center initialisation technique
     max_iter=10,  # Maximum number of iterations for refinement on training set
     metric="dtw",  # Distance metric to use
-    averaging_method="mean",  # Averaging technique to use
+    averaging_method="dba",  # Averaging technique to use
     random_state=1,
 )
 
-k_means.set_tags(**{"X_inner_mtype": "numpy3D",
-"multivariate": False,
-        "unequal_length": True,
-        "missing_values": False,
-        "multithreading": False})
+#k_means.set_tags(**{"X_inner_mtype": "numpy3D","multivariate": False,"unequal_length": True,"missing_values": False,"multithreading": False})
 
 k_means.fit(X)
 plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+
 '''''
 fig, axs = plt.subplot(235)
 for x in series:

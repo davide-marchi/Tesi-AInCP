@@ -4,12 +4,16 @@ import numpy as np
 from datetime import datetime
 import matplotlib
 
-base_df = pd.read_csv(r'only AC/data/9_week_1sec.csv')
+# Creating dataframe
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/data/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/data/'
+
+base_df = pd.read_csv(folder + str(21) + '_week_1sec.csv')
 print(base_df)
 
 date = []
 
-N = 60
+N = 1
 first_cols = ['datetime']
 df = base_df.groupby(base_df.index // N).agg({
     # Cols not to sum
