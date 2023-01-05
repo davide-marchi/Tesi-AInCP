@@ -49,16 +49,9 @@ print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+s
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
 
-k_means = TimeSeriesKMeans(
-    n_clusters=3,  # Number of desired centers
-    init_algorithm="kmeans++",  # Center initialisation technique
-    max_iter=10,  # Maximum number of iterations for refinement on training set
-    metric="dtw",  # Distance metric to use
-    averaging_method="dba",  # Averaging technique to use
-    random_state=1,
-    verbose=True
-)
+k_means = TimeSeriesKMeans()
 
-k_means.fit(X)
-k_means.save(folder + 'kmeansDBA')
-plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+k_means.load_from_path(folder + 'kmeansDBA.zip')
+print(k_means.is_fitted)
+
+#plot_cluster_algorithm(k_means, X, k_means.n_clusters)
