@@ -8,6 +8,9 @@ from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.k_medoids import TimeSeriesKMedoids
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
+from sklearn.metrics import silhouette_score
+
+
 
 # Creating dataframe
 folder = 'C:/Users/giord/Downloads/only AC data/only AC/data/'
@@ -28,7 +31,7 @@ for i in range (1,61):
         # Concat
         magnitude_concat = pd.concat([chunk_D, chunk_ND], ignore_index = True)
         if len(magnitude_concat) == 600:
-            series.append(magnitude_concat)
+            series.append(round(magnitude_concat))
             taken += len(magnitude_concat)/120
             
         else: 
@@ -41,23 +44,42 @@ print("taken = " + str(taken) + "  lost = " + str(lost) + "on a total of = "+str
 
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
-print(X.shape)
-print(type(X))
-print(X)
-
+#print(X.shape)
+#print(type(X))
+#print(X)
+'''''
 k_means = TimeSeriesKMeans(
     n_clusters=4,  # Number of desired centers
-    init_algorithm="random",  # Center initialisation technique
+    init_algorithm="kmeans++",  # Center initialisation technique
     max_iter=10,  # Maximum number of iterations for refinement on training set
     metric="dtw",  # Distance metric to use
     averaging_method="dba",  # Averaging technique to use
     random_state=1,
+    verbose=True
 )
+
+
+'''''
+# Try k-means clustering with different values of k
+for k in range(3, 8):
+    k_means = TimeSeriesKMeans(
+    n_clusters=k,  # Number of desired centers
+    init_algorithm="kmeans++",  # Center initialisation technique
+    max_iter=10,  # Maximum number of iterations for refinement on training set
+    metric="dtw",  # Distance metric to use
+    averaging_method="dba",  # Averaging technique to use
+    random_state=1,
+    verbose=True
+)
+    k_means.fit(X)
+    plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+
+    
 
 #k_means.set_tags(**{"X_inner_mtype": "numpy3D","multivariate": False,"unequal_length": True,"missing_values": False,"multithreading": False})
 
-#k_means.fit(X)
-#plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+k_means.fit(X)
+plot_cluster_algorithm(k_means, X, k_means.n_clusters)
 
 '''''
 fig, axs = plt.subplot(235)
