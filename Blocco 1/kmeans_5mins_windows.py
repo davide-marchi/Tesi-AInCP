@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import joblib as jl
+
 
 from sklearn.model_selection import train_test_split
 from sktime.datasets import load_arrow_head
@@ -10,8 +12,6 @@ from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algor
 
 from sklearn.metrics import silhouette_score
 
-
-
 # Creating dataframe
 folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 #folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
@@ -19,6 +19,7 @@ metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
 
 series = []
+series_rounded = []
 y = []
 lost = 0
 total = 0
@@ -34,7 +35,8 @@ for j in range (1,61):
         # Concat
         magnitude_concat = pd.concat([chunk_D, chunk_ND], ignore_index = True)
         if len(magnitude_concat) == 600:
-            series.append(round(magnitude_concat))
+            series.append(magnitude_concat)
+            series_rounded.append(round(magnitude_concat))
             y.append(metadata['AHA'].iloc[j-1])
             taken += len(magnitude_concat)/120
             
@@ -59,6 +61,11 @@ k_means = TimeSeriesKMeans(
     verbose=True
 )
 
-k_means.fit(X)
-k_means.save(folder + 'kmeansDBA')
-plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+for i in range(0, len(series)):
+    print(max(abs(series[i]-series_rounded[i])))
+    
+
+#y_pred = k_means.fit_predict(X)
+#jl.dump(k_means, '3kmeans5minDBA2')
+#plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+#print(y_pred)

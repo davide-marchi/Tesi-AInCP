@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import joblib as jl
 
 from sklearn.model_selection import train_test_split
 from sktime.datasets import load_arrow_head
@@ -49,9 +50,7 @@ print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+s
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
 
-k_means = TimeSeriesKMeans()
-
-k_means.load_from_path(folder + 'kmeansDBA.zip')
+k_means = jl.load('3kmeans5minMEAN')
 print(k_means.is_fitted)
 
 #plot_cluster_algorithm(k_means, X, k_means.n_clusters)
