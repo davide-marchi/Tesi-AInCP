@@ -50,7 +50,8 @@ print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+s
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
 
-k_means = jl.load('3kmeans5minMEAN')
-print(k_means.is_fitted)
+k_means = jl.load('KMEANS_K3_W300_I10_kmeans++_dtw_dba')
+y_pred = k_means.predict(X)
+print(y_pred)
 
-#plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+plot_cluster_algorithm(k_means, X, k_means.n_clusters)

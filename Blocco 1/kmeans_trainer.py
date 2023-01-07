@@ -8,7 +8,7 @@ from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algor
 
 ######################################################################################
 WINDOW_SIZE=300
-N_CLUSTERS=4
+N_CLUSTERS=3
 INIT_ALGORITHM='kmeans++'
 MAX_ITER=10
 METRIC="dtw"
