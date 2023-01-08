@@ -7,7 +7,7 @@ from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
 ######################################################################################
-WINDOW_SIZE=300
+WINDOW_SIZE=1800
 N_CLUSTERS=3
 INIT_ALGORITHM='kmeans++'
 MAX_ITER=10
@@ -18,8 +18,8 @@ AVERAGING_METHOD="dba"
 modelname='KMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_I'+str(MAX_ITER)+'_'+INIT_ALGORITHM+'_'+METRIC+'_'+AVERAGING_METHOD
 
 # Creating dataframe
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 #metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
 
@@ -29,11 +29,20 @@ lost = 0
 total = 0
 taken = 0
 to_discard = 0
+
 for j in range (1,61):
     df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
-    #assumiamo che dfshape[0]>=WINDOW_SIZE
-    scart = (df.shape[0] % WINDOW_SIZE)/2
     total += df.shape[0]
+
+    print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
+
+    if df.shape[0]<WINDOW_SIZE:
+        df_concat = pd.concat([df, df.iloc[:WINDOW_SIZE-df.shape[0]]], ignore_index = True, axis = 0)
+        df = df_concat
+        print('MODIFICATO Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
+
+    scart = (df.shape[0] % WINDOW_SIZE)/2
+    
     df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
     lost += df.shape[0]-df_cut.shape[0]
     # Calculating magnitude
@@ -47,7 +56,10 @@ for j in range (1,61):
         series.append(magnitude_concat)
         taken += len(magnitude_concat)/2
         
-print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+str(total)+"  percent lost = " + str((lost/total)*100) +"%")
+print("Total = " + str(total) + " seconds")
+print("Trained on = " + str(taken) +" seconds (" + str(taken/total*100) + " % of total)")
+print("Cutted out = " + str(lost) +" seconds (" + str(lost/total*100) + " % of total)")
+
 
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
