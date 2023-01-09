@@ -10,7 +10,7 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
 
-series, y, total, taken, lost = create_windows(300, folder)
+series, y, total, taken, lost = create_windows(900, folder)
 
 print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+str(total)+"  percent lost = " + str((lost/total)*100) +"%")
 
@@ -19,7 +19,7 @@ X = pd.DataFrame({'series': series})
 
 stats = pd.DataFrame()
 
-k_means = jl.load('KMEANS_K4_W300_I10_kmeans++_dtw_dba')
+k_means = jl.load('KMEANS_K4_W900_I10_kmeans++_dtw_dba')
 y_pred = k_means.predict(X)
 print(y_pred)
 print(y)
