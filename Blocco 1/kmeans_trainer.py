@@ -6,8 +6,8 @@ from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
 ######################################################################################
-WINDOW_SIZE=300
-N_CLUSTERS=4
+WINDOW_SIZE=900
+N_CLUSTERS=6
 INIT_ALGORITHM='kmeans++'
 MAX_ITER=10
 METRIC="dtw"
