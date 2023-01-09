@@ -17,7 +17,7 @@ print("taken = " + str(taken) + "  lost = " + str(lost) + "  on a total of = "+s
 # Create a DataFrame with a single column of Series objects
 X = pd.DataFrame({'series': series})
 
-stats = pd.DataFrame()
+stats = pd.DataFrame(columns=['clusters', 'AHA'])
 
 k_means = jl.load('KMEANS_K4_W900_I10_kmeans++_dtw_dba')
 y_pred = k_means.predict(X)
@@ -28,9 +28,12 @@ stats['clusters'] = y_pred
 stats['AHA'] = y
 stats = stats.groupby('clusters').agg(list)
 print(stats)
-#print(stats.loc["clusters",1])
-#s = pd.Series(stats.loc["AHA",1])
-#s.describe()
+
+for i in range(0,stats.shape[0]):
+    print(stats['clusters'].iloc[i])
+    s = pd.Series(stats['AHA'].iloc[i])
+    s.describe()
+
 print('score: ', k_means.score(X))
 plt.scatter(y, y_pred)
 plt.show
