@@ -1,6 +1,7 @@
 import pandas as pd
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
 def create_windows(WINDOW_SIZE, folder):
@@ -41,7 +42,7 @@ def create_windows(WINDOW_SIZE, folder):
     return series, y, total, taken, lost
 
 
-def save_model_stats(y, y_pred, k_means):
+def save_model_stats(X, y, y_pred, k_means, modelname):
 
     stats = pd.DataFrame()
     stats['cluster'] = y_pred
@@ -54,15 +55,20 @@ def save_model_stats(y, y_pred, k_means):
     mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std'])
     print(mean_med_var_std)
 
+    with open('./Blocco 1/' + modelname + '/statistiche.csv', 'w') as f:
+        mean_med_var_std.to_csv('./Blocco 1/' + modelname + '/statistiche.csv')
 
     grouped_stats = stats.groupby('cluster').agg(list)
     print(grouped_stats)
 
+    with open('./Blocco 1/' + modelname + '/classificazione.csv', 'w') as f:
+        grouped_stats.to_csv('./Blocco 1/' + modelname + '/classificazione.csv')
 
     print('score: ', k_means.score(X))
 
 
     ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(4,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
+    
 
     for i,x in enumerate(ax):
 
@@ -90,3 +96,5 @@ def save_model_stats(y, y_pred, k_means):
         x.yaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
 
         x.tick_params(axis='x', rotation=0)
+    
+    plt.savefig("./Blocco 1/" + modelname + "/istogramma.png")

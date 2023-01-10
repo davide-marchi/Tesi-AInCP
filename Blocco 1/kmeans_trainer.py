@@ -3,6 +3,7 @@ import pandas as pd
 import joblib as jl
 import matplotlib.pyplot as plt
 from utils import create_windows
+from utils import save_model_stats
 
 from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
@@ -47,7 +48,6 @@ if not os.path.exists("./Blocco 1/" + modelname + "/" + modelname):
     y_pred = k_means.fit_predict(X)
     os.makedirs("./Blocco 1/" + modelname)
     jl.dump(k_means, "./Blocco 1/" + modelname + "/" + modelname)
-    print(y_pred)
     with open('./Blocco 1/' + modelname + '/parametri.txt', 'w') as f:
         f.write('n_clusters = ' + str(N_CLUSTERS) + '\n')  # Number of desired centers
         f.write('init_algorithm = ' + str(INIT_ALGORITHM) + '\n')  # Center initialisation technique
@@ -55,10 +55,10 @@ if not os.path.exists("./Blocco 1/" + modelname + "/" + modelname):
         f.write('metric = ' + str(METRIC) + '\n')  # Distance metric to use
         f.write('averaging_method = ' + str(AVERAGING_METHOD))  # Averaging technique to use
 
-    #calcolo statistiche
+    save_model_stats(X, y, y_pred, k_means, modelname)
 
 else:
     print("The model has already been trained!")
     k_means = jl.load("./Blocco 1/" + modelname + "/" + modelname)
 
-plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+#plot_cluster_algorithm(k_means, X, k_means.n_clusters)
