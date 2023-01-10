@@ -1,6 +1,7 @@
 import pandas as pd
 import math
 import numpy as np
+from matplotlib.ticker import StrMethodFormatter
 
 def create_windows(WINDOW_SIZE, folder):
     series = []
@@ -38,3 +39,54 @@ def create_windows(WINDOW_SIZE, folder):
             taken += len(magnitude_concat)/2
     
     return series, y, total, taken, lost
+
+
+def save_model_stats(y, y_pred, k_means):
+
+    stats = pd.DataFrame()
+    stats['cluster'] = y_pred
+    stats['AHA'] = y
+
+    # Group the DataFrame
+    grouped = stats.groupby(['cluster'])
+
+    # Compute the mean and median of the groups
+    mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std'])
+    print(mean_med_var_std)
+
+
+    grouped_stats = stats.groupby('cluster').agg(list)
+    print(grouped_stats)
+
+
+    print('score: ', k_means.score(X))
+
+
+    ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(4,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
+
+    for i,x in enumerate(ax):
+
+        # Despine
+        x.spines['right'].set_visible(False)
+        x.spines['top'].set_visible(False)
+        x.spines['left'].set_visible(False)
+
+        # Switch off ticks
+        x.tick_params(axis="both", which="both", bottom="off", top="off", labelbottom="on", left="off", right="off", labelleft="on")
+
+        # Draw horizontal axis lines
+        vals = x.get_yticks()
+        for tick in vals:
+            x.axhline(y=tick, linestyle='dashed', alpha=0.4, color='#eeeeee', zorder=1)
+
+        # Set x-axis label
+        x.set_xlabel("Assisting Hand Assessment (AHA)", labelpad=20, weight='bold', size=12)
+
+        # Set y-axis label
+        if i == 1:
+            x.set_ylabel("Clusters", labelpad=50, weight='bold', size=12)
+
+        # Format y-axis label
+        x.yaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
+
+        x.tick_params(axis='x', rotation=0)

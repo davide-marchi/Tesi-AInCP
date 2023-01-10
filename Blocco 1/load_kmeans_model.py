@@ -65,11 +65,11 @@ for i,x in enumerate(ax):
         x.axhline(y=tick, linestyle='dashed', alpha=0.4, color='#eeeeee', zorder=1)
 
     # Set x-axis label
-    x.set_xlabel("Session Duration (Seconds)", labelpad=20, weight='bold', size=12)
+    x.set_xlabel("Assisting Hand Assessment (AHA)", labelpad=20, weight='bold', size=12)
 
     # Set y-axis label
     if i == 1:
-        x.set_ylabel("Sessions", labelpad=50, weight='bold', size=12)
+        x.set_ylabel("Clusters", labelpad=50, weight='bold', size=12)
 
     # Format y-axis label
     x.yaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
@@ -77,11 +77,4 @@ for i,x in enumerate(ax):
     x.tick_params(axis='x', rotation=0)
 
 
-
-
-# show the plot
-plt.show()
-
-
-plt.show
 plot_cluster_algorithm(k_means, X, k_means.n_clusters)
