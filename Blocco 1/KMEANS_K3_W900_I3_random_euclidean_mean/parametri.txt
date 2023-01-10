@@ -1,0 +1,5 @@
+n_clusters = 3
+init_algorithm = random
+max_iter = 3
+metric = euclidean
+averaging_method = mean
