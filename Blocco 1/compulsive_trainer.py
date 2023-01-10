@@ -1,17 +1,25 @@
+from train_kmeans_model import train_kmeans_model
 
-#MAX ITERATION is fixed to 10
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 l_window_size=[300,600,900] # 3 values
 l_n_clusters=[4,6,8] # 3 values
 l_init_algorithm=['kmeans++'] # 1 values
+l_max_iter=[10]
 l_metric=['euclidean', 'dtw'] # 2 values
 l_averaging_method=['mean', 'dba'] # 2 values
 
-#36 models 
+models_number = len(l_window_size) * len(l_n_clusters) * len(l_init_algorithm) * len(l_max_iter) * len(l_metric) * len(l_averaging_method)
+i = 1
 
-for metric in l_metric:
+
+for size in l_window_size:
     for n in l_n_clusters:
         for alg in l_init_algorithm:
-            for avg in l_averaging_method:
-                for size in l_window_size:
-                    trainer(n, alg, metric, avg, size)
+            for it in l_max_iter:
+                for metric in l_metric:
+                    for avg in l_averaging_method:
+                        train_kmeans_model(folder, size, n, alg, it, metric, avg)
+                        print("Trained " + str(i) + " models out of " + str(models_number) + " (" + str(i/models_number*100) + " %)")
+                        i += 1

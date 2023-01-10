@@ -16,12 +16,13 @@ def create_windows(WINDOW_SIZE, folder):
         df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
         total += df.shape[0]
 
-        print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
+        #print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
 
+        # Nel caso in cui non bastasse una duplicazione dell'intera time series questa verrà scartata
         if df.shape[0]<WINDOW_SIZE:
             df_concat = pd.concat([df, df.iloc[:WINDOW_SIZE-df.shape[0]]], ignore_index = True, axis = 0)
             df = df_concat
-            print('MODIFICATO Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
+            #print('MODIFICATO Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
 
         scart = (df.shape[0] % WINDOW_SIZE)/2
         
@@ -53,22 +54,17 @@ def save_model_stats(X, y, y_pred, k_means, modelname):
 
     # Compute the mean and median of the groups
     mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std'])
-    print(mean_med_var_std)
-
     with open('./Blocco 1/' + modelname + '/statistiche.csv', 'w') as f:
         mean_med_var_std.to_csv('./Blocco 1/' + modelname + '/statistiche.csv')
 
     grouped_stats = stats.groupby('cluster').agg(list)
-    print(grouped_stats)
-
     with open('./Blocco 1/' + modelname + '/classificazione.csv', 'w') as f:
         grouped_stats.to_csv('./Blocco 1/' + modelname + '/classificazione.csv')
 
-    print('score: ', k_means.score(X))
-
+    with open('./Blocco 1/' + modelname + '/parametri.txt', 'a') as f:
+        f.write('score: ' + str(k_means.score(X)))
 
     ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(4,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
-    
 
     for i,x in enumerate(ax):
 
