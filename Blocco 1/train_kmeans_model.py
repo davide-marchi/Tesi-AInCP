@@ -41,7 +41,7 @@ def train_kmeans_model(folder, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, MAX_ITER
             f.write('Trained on = ' + str(taken) + ' seconds (' + str(taken/total*100) + ' % of total)\n')
             f.write('Cutted out = ' + str(lost) + ' seconds (' + str(lost/total*100) + ' % of total)\n\n')
 
-        save_model_stats(X, y, y_pred, k_means, modelname)
+        save_model_stats(X, y, y_pred, k_means, modelname, N_CLUSTERS)
 
     else:
         print("The model has already been trained!")

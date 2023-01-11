@@ -43,7 +43,7 @@ def create_windows(WINDOW_SIZE, folder):
     return series, y, total, taken, lost
 
 
-def save_model_stats(X, y, y_pred, k_means, modelname):
+def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS):
 
     stats = pd.DataFrame()
     stats['cluster'] = y_pred
@@ -64,7 +64,7 @@ def save_model_stats(X, y, y_pred, k_means, modelname):
     with open('./Blocco 1/' + modelname + '/parametri.txt', 'a') as f:
         f.write('score: ' + str(k_means.score(X)))
 
-    ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(4,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
+    ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
 
     for i,x in enumerate(ax):
 
