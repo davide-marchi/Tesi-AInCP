@@ -1,0 +1,9 @@
+KMEANS_K4_W300_I10_kmeans++_dtw_dba         -> Interessante ma non significativo
+
+KMEANS_K4_W300_I10_kmeans++_euclidean_dba   -> Ha medie e mediane in scaletta ma sus
+
+KMEANS_K4_W600_I10_kmeans++_dtw_dba         -> Distingue un po' malati gravi da meno gravi
+
+KMEANS_K4_W600_I10_kmeans++_euclidean_mean  -> Suddivide malati da non malati
+
+KMEANS_K4_W900_I10_kmeans++_dtw_dba         -> Suddivide bene malati da non malati
