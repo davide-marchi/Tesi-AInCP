@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
-def create_windows(WINDOW_SIZE, folder):
+def create_windows(WINDOW_SIZE, folder, patients):
     series = []
     y = []
     lost = 0
@@ -12,7 +12,7 @@ def create_windows(WINDOW_SIZE, folder):
     taken = 0
     metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
-    for j in range (1,61):
+    for j in range (1,patients+1):
         df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
         total += df.shape[0]
 
@@ -43,7 +43,7 @@ def create_windows(WINDOW_SIZE, folder):
     return series, y, total, taken, lost
 
 
-def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS):
+def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS,model_folder):
 
     stats = pd.DataFrame()
     stats['cluster'] = y_pred
@@ -54,14 +54,14 @@ def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS):
 
     # Compute the mean and median of the groups
     mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std'])
-    with open('./Blocco 1/' + modelname + '/statistiche.csv', 'w') as f:
-        mean_med_var_std.to_csv('./Blocco 1/' + modelname + '/statistiche.csv')
+    with open(model_folder + modelname + '/statistiche.csv', 'w') as f:
+        mean_med_var_std.to_csv(model_folder + modelname + '/statistiche.csv')
 
     grouped_stats = stats.groupby('cluster').agg(list)
-    with open('./Blocco 1/' + modelname + '/classificazione.csv', 'w') as f:
-        grouped_stats.to_csv('./Blocco 1/' + modelname + '/classificazione.csv')
+    with open(model_folder + modelname + '/classificazione.csv', 'w') as f:
+        grouped_stats.to_csv(model_folder + modelname + '/classificazione.csv')
 
-    with open('./Blocco 1/' + modelname + '/parametri.txt', 'a') as f:
+    with open(model_folder + modelname + '/parametri.txt', 'a') as f:
         f.write('score: ' + str(k_means.score(X)))
 
     ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
@@ -93,4 +93,4 @@ def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS):
 
         x.tick_params(axis='x', rotation=0)
     
-    plt.savefig("./Blocco 1/" + modelname + "/istogramma.png")
+    plt.savefig(model_folder + modelname + "/istogramma.png")
