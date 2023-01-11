@@ -47,6 +47,6 @@ def train_kmeans_model(folder, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, MAX_ITER
         print("The model has already been trained!")
         k_means = jl.load("./Blocco 1/" + modelname + "/" + modelname)
 
-    #plot_cluster_algorithm(k_means, X, k_means.n_clusters)
+    plot_cluster_algorithm(k_means, X, k_means.n_clusters)
 
     #print("TRAINING COMPLETED (Model " + modelname + " ready)")
