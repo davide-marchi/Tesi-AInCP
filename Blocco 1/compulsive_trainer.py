@@ -4,8 +4,6 @@ from train_kmedoids_model import train_kmedoids_model
 #folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
-#FIRST CRASH: manca k4_w600_dtw_dba, k4_w600_dtw_mean, k4_w600_euclidean_dba, k4_w600_euclidean_mean
-#             manca k4_w900_dtw_dba, k4_w900_dtw_mean, k4_w900_euclidean_dba, k4_w900_euclidean_mean
 
 l_window_size=[300,600,900] # 3 values
 l_n_clusters=[2] # 1 values
