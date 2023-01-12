@@ -1,0 +1,9 @@
+n_clusters = 4
+init_algorithm = forgy
+max_iter = 30
+metric = dtw
+Total = 66024 seconds
+Trained on = 49200.0 seconds (74.51835696110504 % of total)
+Cutted out = 16824 seconds (25.481643038894948 % of total)
+
+score: -156201436.8676737

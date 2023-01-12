@@ -2,11 +2,13 @@ import pandas as pd
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import silhouette_score
 from matplotlib.ticker import StrMethodFormatter
 
 def create_windows(WINDOW_SIZE, folder, patients):
     series = []
-    y = []
+    y_AHA = []
+    y_MACS =[]
     lost = 0
     total = 0
     taken = 0
@@ -37,23 +39,25 @@ def create_windows(WINDOW_SIZE, folder, patients):
             # Concat
             magnitude_concat = pd.concat([chunk_D, chunk_ND], ignore_index = True)
             series.append(magnitude_concat)
-            y.append(metadata['AHA'].iloc[j-1])
+            y_AHA.append(metadata['AHA'].iloc[j-1])
+            y_MACS.append(metadata['MACS'].iloc[j-1])
             taken += len(magnitude_concat)/2
     
-    return series, y, total, taken, lost
+    return series, y_AHA, y_MACS, total, taken, lost
 
 
-def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS,model_folder):
+def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model_folder):
 
     stats = pd.DataFrame()
     stats['cluster'] = y_pred
-    stats['AHA'] = y
+    stats['AHA'] = y_AHA
+    stats['MACS'] = y_MACS
 
     # Group the DataFrame
     grouped = stats.groupby(['cluster'])
 
     # Compute the mean and median of the groups
-    mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std'])
+    mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std', 'count'])
     with open(model_folder + modelname + '/statistiche.csv', 'w') as f:
         mean_med_var_std.to_csv(model_folder + modelname + '/statistiche.csv')
 
@@ -62,7 +66,9 @@ def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS,model_folder):
         grouped_stats.to_csv(model_folder + modelname + '/classificazione.csv')
 
     with open(model_folder + modelname + '/parametri.txt', 'a') as f:
-        f.write('score: ' + str(k_means.score(X)))
+        f.write('score: ' + str(model.score(X)) + '\n')
+        f.write('inertia: ' + str(model.inertia_))
+        #f.write('silhouette score: ' + str(silhouette_score(X, model.labels_)))
 
     ax = stats.hist(column='AHA', by='cluster', bins=np.linspace(0,100,51), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
 
@@ -93,4 +99,35 @@ def save_model_stats(X, y, y_pred, k_means, modelname, NCLUSTERS,model_folder):
 
         x.tick_params(axis='x', rotation=0)
     
-    plt.savefig(model_folder + modelname + "/istogramma.png")
+    plt.savefig(model_folder + modelname + "/istogramma_AHA.png")
+
+    ax = stats.hist(column='MACS', by='cluster', bins=np.linspace(-0.5,3.5,5), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
+  
+    for i,x in enumerate(ax):
+
+        # Despine
+        x.spines['right'].set_visible(False)
+        x.spines['top'].set_visible(False)
+        x.spines['left'].set_visible(False)
+
+        # Switch off ticks
+        x.tick_params(axis="both", which="both", bottom="off", top="off", labelbottom="on", left="off", right="off", labelleft="on")
+
+        # Draw horizontal axis lines
+        vals = x.get_yticks()
+        for tick in vals:
+            x.axhline(y=tick, linestyle='dashed', alpha=0.4, color='#eeeeee', zorder=1)
+
+        # Set x-axis label
+        x.set_xlabel("Manual Ability Classification System (MACS)", labelpad=20, weight='bold', size=12)
+
+        # Set y-axis label
+        if i == 1:
+            x.set_ylabel("Clusters", labelpad=50, weight='bold', size=12)
+
+        # Format y-axis label
+        x.yaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
+
+        x.tick_params(axis='x', rotation=0)
+    
+    plt.savefig(model_folder + modelname + "/istogramma_MACS.png")

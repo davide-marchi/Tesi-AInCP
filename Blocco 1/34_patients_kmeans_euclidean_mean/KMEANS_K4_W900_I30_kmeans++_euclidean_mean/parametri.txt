@@ -1,0 +1,11 @@
+n_clusters = 4
+init_algorithm = kmeans++
+max_iter = 30
+metric = euclidean
+averaging_method = mean
+
+Total = 41655 seconds
+Trained on = 30600.0 seconds (73.4605689593086 % of total)
+Cutted out = 11235 seconds (26.97155203456968 % of total)
+
+score: -91993.58956077154

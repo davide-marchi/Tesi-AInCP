@@ -12,7 +12,7 @@ def train_kmeans_model(folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM
 
     modelname='KMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_I'+str(MAX_ITER)+'_'+INIT_ALGORITHM+'_'+METRIC+'_'+AVERAGING_METHOD
     
-    series, y, total, taken, lost = create_windows(WINDOW_SIZE, folder, patients)
+    series, y_AHA, y_MACS, total, taken, lost = create_windows(WINDOW_SIZE, folder, patients)
 
     # Create a DataFrame with a single column of Series objects
     X = pd.DataFrame({'series': series})
@@ -26,7 +26,7 @@ def train_kmeans_model(folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM
         verbose=False
     )
 
-    model_folder = "./Blocco 1/" + str(patients)+"_patients_"+METRIC+"_"+AVERAGING_METHOD +"/"
+    model_folder = "./Blocco 1/" + str(patients)+"_patients_kmeans_"+METRIC+"_"+AVERAGING_METHOD +"/"
 
     if not os.path.exists(model_folder + modelname + "/" + modelname):
         y_pred = k_means.fit_predict(X)
@@ -43,7 +43,7 @@ def train_kmeans_model(folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM
             f.write('Trained on = ' + str(taken) + ' seconds (' + str(taken/total*100) + ' % of total)\n')
             f.write('Cutted out = ' + str(lost) + ' seconds (' + str(lost/total*100) + ' % of total)\n\n')
 
-        save_model_stats(X, y, y_pred, k_means, modelname, N_CLUSTERS, model_folder)
+        save_model_stats(X, y_AHA, y_MACS, y_pred, k_means, modelname, N_CLUSTERS, model_folder)
 
     else:
         print("The model has already been trained!")
