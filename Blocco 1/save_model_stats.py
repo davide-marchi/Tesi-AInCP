@@ -5,47 +5,6 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 from matplotlib.ticker import StrMethodFormatter
 
-def create_windows(WINDOW_SIZE, folder, patients):
-    series = []
-    y_AHA = []
-    y_MACS =[]
-    lost = 0
-    total = 0
-    taken = 0
-    metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
-
-    for j in range (1,patients+1):
-        df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
-        total += df.shape[0]
-
-        #print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
-
-        # Nel caso in cui non bastasse una duplicazione dell'intera time series questa verrà scartata
-        if df.shape[0]<WINDOW_SIZE:
-            df_concat = pd.concat([df, df.iloc[:WINDOW_SIZE-df.shape[0]]], ignore_index = True, axis = 0)
-            df = df_concat
-            #print('MODIFICATO Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
-
-        scart = (df.shape[0] % WINDOW_SIZE)/2
-        
-        df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
-        lost += df.shape[0]-df_cut.shape[0]
-        # Calculating magnitude
-        magnitude_D = np.sqrt(np.square(df_cut['x_D']) + np.square(df_cut['y_D']) + np.square(df_cut['z_D']))
-        magnitude_ND = np.sqrt(np.square(df_cut['x_ND']) + np.square(df_cut['y_ND']) + np.square(df_cut['z_ND']))
-        for i in range (0, len(magnitude_D), WINDOW_SIZE):
-            chunk_D = magnitude_D.iloc[i:i + WINDOW_SIZE]
-            chunk_ND = magnitude_ND.iloc[i:i + WINDOW_SIZE]
-            # Concat
-            magnitude_concat = pd.concat([chunk_D, chunk_ND], ignore_index = True)
-            series.append(magnitude_concat)
-            y_AHA.append(metadata['AHA'].iloc[j-1])
-            y_MACS.append(metadata['MACS'].iloc[j-1])
-            taken += len(magnitude_concat)/2
-    
-    return series, y_AHA, y_MACS, total, taken, lost
-
-
 def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model_folder):
 
     stats = pd.DataFrame()
@@ -58,14 +17,14 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
 
     # Compute the mean and median of the groups
     mean_med_var_std = grouped.agg(['mean', 'median', 'var', 'std', 'count'])
-    with open(model_folder + modelname + '/statistiche.csv', 'w') as f:
-        mean_med_var_std.to_csv(model_folder + modelname + '/statistiche.csv')
+    with open(model_folder + '/statistiche.csv', 'w') as f:
+        mean_med_var_std.to_csv(model_folder + '/statistiche.csv')
 
     grouped_stats = stats.groupby('cluster').agg(list)
-    with open(model_folder + modelname + '/classificazione.csv', 'w') as f:
-        grouped_stats.to_csv(model_folder + modelname + '/classificazione.csv')
+    with open(model_folder + '/classificazione.csv', 'w') as f:
+        grouped_stats.to_csv(model_folder + '/classificazione.csv')
 
-    with open(model_folder + modelname + '/parametri.txt', 'a') as f:
+    with open(model_folder + '/parametri.txt', 'a') as f:
         f.write('score: ' + str(model.score(X)) + '\n')
         f.write('inertia: ' + str(model.inertia_))
         #f.write('silhouette score: ' + str(silhouette_score(X, model.labels_)))
@@ -99,7 +58,7 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
 
         x.tick_params(axis='x', rotation=0)
     
-    plt.savefig(model_folder + modelname + "/istogramma_AHA.png")
+    plt.savefig(model_folder + "/istogramma_AHA.png")
 
     ax = stats.hist(column='MACS', by='cluster', bins=np.linspace(-0.5,3.5,5), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
   
@@ -130,4 +89,4 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
 
         x.tick_params(axis='x', rotation=0)
     
-    plt.savefig(model_folder + modelname + "/istogramma_MACS.png")
+    plt.savefig(model_folder + "/istogramma_MACS.png")

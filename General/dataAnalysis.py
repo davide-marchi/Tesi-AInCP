@@ -9,7 +9,7 @@ import matplotlib
 folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/data/'
 
 
-df = pd.read_csv(folder + str(21) + '_AHA_1sec.csv')
+df = pd.read_csv(folder + str(30) + '_AHA_1sec.csv')
 
 
 df['Magnitude_D'] = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
