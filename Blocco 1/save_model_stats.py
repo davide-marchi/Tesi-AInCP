@@ -25,7 +25,6 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
         grouped_stats.to_csv(model_folder + '/classificazione.csv')
 
     with open(model_folder + '/parametri.txt', 'a') as f:
-        f.write('score: ' + str(model.score(X)) + '\n')
         f.write('inertia: ' + str(model.inertia_))
         #f.write('silhouette score: ' + str(silhouette_score(X, model.labels_)))
 
@@ -59,6 +58,7 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
         x.tick_params(axis='x', rotation=0)
     
     plt.savefig(model_folder + "/istogramma_AHA.png")
+    plt.close()
 
     ax = stats.hist(column='MACS', by='cluster', bins=np.linspace(-0.5,3.5,5), grid=False, figsize=(8,10), layout=(NCLUSTERS,1), sharex=True, color='#86bf91', zorder=2, rwidth=0.9)
   
@@ -90,3 +90,4 @@ def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model
         x.tick_params(axis='x', rotation=0)
     
     plt.savefig(model_folder + "/istogramma_MACS.png")
+    plt.close()

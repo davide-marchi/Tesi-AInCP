@@ -11,27 +11,37 @@ from sktime.clustering.k_shapes import TimeSeriesKShapes
 from sktime.clustering.kernel_k_means import TimeSeriesKernelKMeans
 
 
-def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, MAX_ITER, METRIC, AVERAGING_METHOD):
+def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC, AVERAGING_METHOD):
 
 
 
     if (model_type == 'KMeans'):
-        model_name='KMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_I'+str(MAX_ITER)+'_'+INIT_ALGORITHM+'_'+METRIC+'_'+AVERAGING_METHOD
+        model_name='KMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_'+INIT_ALGORITHM+'_'+METRIC+'_'+AVERAGING_METHOD
         model = TimeSeriesKMeans(
             n_clusters=N_CLUSTERS,  # Number of desired centers
             init_algorithm=INIT_ALGORITHM,  # Center initialisation technique
-            max_iter=MAX_ITER,  # Maximum number of iterations for refinement on training set
             metric=METRIC,  # Distance metric to use
             averaging_method=AVERAGING_METHOD,  # Averaging technique to use
             verbose=False
         )
     elif(model_type == 'KMedoids'):
-        model_name='KMEDOIDS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_I'+str(MAX_ITER)+'_'+INIT_ALGORITHM+'_'+METRIC
+        model_name='KMEDOIDS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_'+INIT_ALGORITHM+'_'+METRIC
         model = TimeSeriesKMedoids(
             n_clusters=N_CLUSTERS,  # Number of desired centers
             init_algorithm=INIT_ALGORITHM,  # Center initialisation technique
-            max_iter=MAX_ITER,  # Maximum number of iterations for refinement on training set
             metric=METRIC,  # Distance metric to use
+            verbose=False
+        )
+    elif(model_type == 'KShapes'):
+        model_name='KSHAPES_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)
+        model = TimeSeriesKShapes(
+            n_clusters=N_CLUSTERS,  # Number of desired centers
+            verbose=False
+        )
+    elif(model_type == 'KernelKMeans'):
+        model_name='KERNELKMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)
+        model = TimeSeriesKernelKMeans(
+            n_clusters=N_CLUSTERS,  # Number of desired centers
             verbose=False
         )
     else:
@@ -50,12 +60,6 @@ def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS
         os.makedirs(model_folder)
         jl.dump(model, model_folder + "/trained_model")
         with open(model_folder + '/parametri.txt', 'w') as f:
-            f.write('n_clusters = ' + str(N_CLUSTERS) + '\n')  # Number of desired centers
-            f.write('init_algorithm = ' + str(INIT_ALGORITHM) + '\n')  # Center initialisation technique
-            f.write('max_iter = ' + str(MAX_ITER) + '\n')  # Maximum number of iterations for refinement on training set
-            f.write('metric = ' + str(METRIC) + '\n')  # Distance metric to use
-            f.write('averaging_method = ' + str(AVERAGING_METHOD) + '\n\n')  # Averaging technique to use
-
             f.write('Total = ' + str(total) + ' seconds\n')
             f.write('Trained on = ' + str(taken) + ' seconds (' + str(taken/total*100) + ' % of total)\n')
             f.write('Cutted out = ' + str(lost) + ' seconds (' + str(lost/total*100) + ' % of total)\n\n')
