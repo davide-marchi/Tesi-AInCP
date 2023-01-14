@@ -6,9 +6,9 @@ import numpy as np
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
-model_folder = 'Blocco 1/60_patients/KMeans/KMEANS_K2_W900_I30_kmeans++_euclidean_mean/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+model_folder = 'Blocco 1/60_patients/KMeans/KMEANS_K2_W900_I10_kmeans++_dtw_dba/'
 ############
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
@@ -24,65 +24,47 @@ else:
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
-guessed_patients = 0
-indecisi = 0
+guessed_hemiplegic_patients = 0
+guessed_healthy_patients = 0
+uncertain_patients = 0
+predictions = []
 
 for i in range (1,61):
 
     df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv', chunksize=sample_size)
-    #week_lenght = df.shape[0]  
 
-    cluster_0_samples = 0 #malati
-    cluster_1_samples = 0 #sani
-    series=[]
+    cluster_hemiplegic_samples = 0 #malati
+    cluster_healthy_samples = 0 #sani
     
     for chunk in df:
+
         magnitude_D = np.sqrt(np.square(chunk['x_D']) + np.square(chunk['y_D']) + np.square(chunk['z_D']))
         magnitude_ND = np.sqrt(np.square(chunk['x_ND']) + np.square(chunk['y_ND']) + np.square(chunk['z_ND']))
         magnitude_concat = pd.concat([magnitude_D, magnitude_ND], ignore_index = True)
-        series.append(magnitude_concat)
-        
-    X = pd.DataFrame({'series': series}) 
-    prediction = model.predict(X)
-    for n in prediction:
-        if n == 0:
-            cluster_0_samples+=1
-        else:
-            cluster_1_samples+=1    
-    
-    if cluster_0_samples > cluster_1_samples and metadata['hemi'].iloc[i-1] == 2:
-        print("ho indovinato un paziente malato. bene !")
-        guessed_patients+=1
-    elif cluster_0_samples > cluster_1_samples and metadata['hemi'].iloc[i-1] == 1:
-        print("ho sbagliato un paziente sano. pensavo fosse malato !")
-    elif cluster_0_samples < cluster_1_samples and metadata['hemi'].iloc[i-1] == 1:
-        print("ho indovinato un paziente sano. bene !")
-        guessed_patients+=1
-    elif cluster_0_samples < cluster_1_samples and metadata['hemi'].iloc[i-1] == 2:
-        print("ho sbagliato un paziente malato. pensavo fosse sano !")
-    elif cluster_0_samples == cluster_1_samples:
-        print("eh qui non so decidermi molto bene.")
-        indecisi+=1
-        
-print("guessed patients: " , guessed_patients, "/60 (", (guessed_patients/60)*100, "%)")
-print("indecisi: " , indecisi, "/60 (", (indecisi/60)*100, "%)")
 
-    # Iterate through the DataFrame
-    #for j, rows in enumerate(df.iterrows()):
-        #if j % sample_size == 0:
-            #sample = df.iloc[j:j+sample_size]
-            #print(type(sample))
-            #print(sample)
+        if magnitude_concat.agg('sum') != 0:
 
-            #calcolare magnitude D e ND
+            # Presupponendo che i pazienti emiplegici siano nel cluster 1
+            if model.predict(np.array([magnitude_concat]))[0] == 1:
+                cluster_hemiplegic_samples += 1
+            else:
+                cluster_healthy_samples += 1    
 
-            #concatenare magnitude D e ND
+    is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
 
-            #Predirre la concatenazione
-            #print(model.predict(pd.Series(sample)))
+    prediction = "Patient " + str(i) + " - Is hemiplegic? " + str(is_hemiplegic) + " - Predicted hemiplegic? " + str(cluster_hemiplegic_samples > cluster_healthy_samples)
+    print(prediction)
+    predictions.append(prediction)
 
-            #aumentare l'apposito contatore
-    
-    # Se sample sani > sample malati e il paziente è sano allora guessed_patients +=1
+    guessed_hemiplegic_patients += int(cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic)
+    guessed_healthy_patients += int(cluster_hemiplegic_samples < cluster_healthy_samples and not is_hemiplegic)
+    uncertain_patients += int(cluster_hemiplegic_samples == cluster_healthy_samples)
 
-# stampare guessed_patients
+
+with open(model_folder + '/week_predictions.txt', 'w') as f:
+    f.write("Guessed patients: " + str(guessed_healthy_patients + guessed_hemiplegic_patients) + "/60 (" + str(((guessed_healthy_patients + guessed_hemiplegic_patients)/60)*100) + "%)\n")
+    f.write("Guessed hemiplegic patients: " + str(guessed_hemiplegic_patients) + "/34 (" + str((guessed_hemiplegic_patients/34)*100) + "%)\n")
+    f.write("Guessed healthy patients: " + str(guessed_healthy_patients) + "/26 (" + str((guessed_healthy_patients/26)*100) + "%)\n")
+    f.write("Uncertain patients: " + str(uncertain_patients) + "/60 (" + str((uncertain_patients/60)*100) + "%)\n\n")
+    for prediction in predictions:
+        f.write("%s\n" % prediction)
