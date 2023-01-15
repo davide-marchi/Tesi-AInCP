@@ -6,10 +6,10 @@ import numpy as np
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
-model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
+model_name = 'KMEANS_K2_W900_kmeans++_euclidean_mean'
 
 model_folder = 'Blocco 1/60_patients/KMeans/' + model_name + '/'
 ############
