@@ -7,3 +7,7 @@ KMEANS_K4_W600_I10_kmeans++_dtw_dba         -> Distingue un po' malati gravi da 
 KMEANS_K4_W600_I10_kmeans++_euclidean_mean  -> Suddivide malati da non malati
 
 KMEANS_K4_W900_I10_kmeans++_dtw_dba         -> Suddivide bene malati da non malati
+
+
+
+KMEANS_K2_W600_I30_kmeans++_euclidean_mean  -> YO. 

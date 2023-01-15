@@ -6,9 +6,12 @@ import numpy as np
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
-model_folder = 'Blocco 1/60_patients/KMeans/KMEANS_K2_W900_I30_kmeans++_euclidean_mean/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+
+model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
+
+model_folder = 'Blocco 1/60_patients/KMeans/' + model_name + '/'
 ############
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
@@ -37,7 +40,7 @@ for i in range (1,61):
     cluster_healthy_samples = 0 #sani
     series = []
     
-    print("Inzio fase chunking")
+    print("Inizio fase chunking")
     for chunk in df:
 
         magnitude_D = np.sqrt(np.square(chunk['x_D']) + np.square(chunk['y_D']) + np.square(chunk['z_D']))
@@ -48,10 +51,10 @@ for i in range (1,61):
             series.append(magnitude_concat)
     
 
-    print("Inzio fase predizione")
+    print("Inizio fase predizione")
     Y = model.predict(np.array(series))
 
-    print("Inzio fase incrementi e stampe")
+    print("Inizio fase incrementi e stampe")
     for y in Y:
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
         if y == 0:
@@ -74,7 +77,7 @@ for i in range (1,61):
         uncertain_patients += 1
 
 
-with open(model_folder + '/week_predictions.txt', 'w') as f:
+with open('Blocco 1/week_predictions/'+model_name+'.txt', 'w') as f:
     f.write("Guessed patients: " + str(guessed_healthy_patients + guessed_hemiplegic_patients) + "/60 (" + str(((guessed_healthy_patients + guessed_hemiplegic_patients)/60)*100) + "%)\n")
     f.write("Guessed hemiplegic patients: " + str(guessed_hemiplegic_patients) + "/34 (" + str((guessed_hemiplegic_patients/34)*100) + "%)\n")
     f.write("Guessed healthy patients: " + str(guessed_healthy_patients) + "/26 (" + str((guessed_healthy_patients/26)*100) + "%)\n")

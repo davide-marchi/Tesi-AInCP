@@ -9,6 +9,7 @@ from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.k_medoids import TimeSeriesKMedoids
 from sktime.clustering.k_shapes import TimeSeriesKShapes
 from sktime.clustering.kernel_k_means import TimeSeriesKernelKMeans
+from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
 
 def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC, AVERAGING_METHOD):
