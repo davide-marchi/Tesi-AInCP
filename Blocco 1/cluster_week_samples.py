@@ -57,7 +57,7 @@ for i in range (1,61):
     print("Inizio fase incrementi e stampe")
     for y in Y:
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
-        if y == 1:
+        if y == 0:
             cluster_hemiplegic_samples += 1
         else:
             cluster_healthy_samples += 1    
