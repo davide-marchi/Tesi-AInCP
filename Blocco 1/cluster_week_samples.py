@@ -6,8 +6,8 @@ import numpy as np
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_dtw_dba'
 
