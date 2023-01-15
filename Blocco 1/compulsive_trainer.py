@@ -6,11 +6,11 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 patients = 60
 
 l_model_type=['KMeans'] #'KMeans', 'KMedoids', 'KernelKMeans'
-l_window_size=[300,600,900] # 3 values
+l_window_size=[300] # 3 values
 l_n_clusters=[2] # 1 values
 l_init_algorithm=['kmeans++'] # 1 values
-l_metric=['dtw'] # 1 values
-l_averaging_method=['dba'] # 1 values
+l_metric=['euclidean'] # 1 values
+l_averaging_method=['mean'] # 1 values
 
 
 
