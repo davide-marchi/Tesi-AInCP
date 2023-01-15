@@ -8,7 +8,7 @@ import numpy as np
 ############
 folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 #folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
-model_folder = 'Blocco 1/60_patients/KMeans/KMEANS_K2_W900_I10_kmeans++_dtw_dba/'
+model_folder = 'Blocco 1/60_patients/KMeans/KMEANS_K2_W900_I30_kmeans++_euclidean_mean/'
 ############
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
@@ -35,7 +35,9 @@ for i in range (1,61):
 
     cluster_hemiplegic_samples = 0 #malati
     cluster_healthy_samples = 0 #sani
+    series = []
     
+    print("Inzio fase chunking")
     for chunk in df:
 
         magnitude_D = np.sqrt(np.square(chunk['x_D']) + np.square(chunk['y_D']) + np.square(chunk['z_D']))
@@ -43,12 +45,20 @@ for i in range (1,61):
         magnitude_concat = pd.concat([magnitude_D, magnitude_ND], ignore_index = True)
 
         if magnitude_concat.agg('sum') != 0:
+            series.append(magnitude_concat)
+    
 
-            # Presupponendo che i pazienti emiplegici siano nel cluster 1
-            if model.predict(np.array([magnitude_concat]))[0] == 1:
-                cluster_hemiplegic_samples += 1
-            else:
-                cluster_healthy_samples += 1    
+    print("Inzio fase predizione")
+    Y = model.predict(np.array(series))
+
+    print("Inzio fase incrementi e stampe")
+    for y in Y:
+        # Presupponendo che i pazienti emiplegici siano nel cluster 0
+        if y == 0:
+            cluster_hemiplegic_samples += 1
+        else:
+            cluster_healthy_samples += 1    
+
 
     is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
 
@@ -56,9 +66,12 @@ for i in range (1,61):
     print(prediction)
     predictions.append(prediction)
 
-    guessed_hemiplegic_patients += int(cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic)
-    guessed_healthy_patients += int(cluster_hemiplegic_samples < cluster_healthy_samples and not is_hemiplegic)
-    uncertain_patients += int(cluster_hemiplegic_samples == cluster_healthy_samples)
+    if cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic:
+        guessed_hemiplegic_patients += 1
+    elif cluster_hemiplegic_samples < cluster_healthy_samples and not is_hemiplegic:
+        guessed_healthy_patients += 1
+    elif cluster_hemiplegic_samples == cluster_healthy_samples:
+        uncertain_patients += 1
 
 
 with open(model_folder + '/week_predictions.txt', 'w') as f:
