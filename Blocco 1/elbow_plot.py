@@ -11,7 +11,7 @@ import re
 #per finestre da 900: 4 cluster
 
 
-root_dir = 'Blocco 1/60_patients/KMedoids'
+root_dir = 'Blocco 1/60_patients/KMeans'
 
 window = '900'
 spec = 'euclidean'
