@@ -12,11 +12,12 @@ from sktime.clustering.kernel_k_means import TimeSeriesKernelKMeans
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
 
-def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC, AVERAGING_METHOD):
-
-
+def train_clustering_model(folder, plot_clusters, patients, model_type, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC):
 
     if (model_type == 'KMeans'):
+        AVERAGING_METHOD = 'mean' # defaults
+        if METRIC == 'dtw':
+            AVERAGING_METHOD = 'dba'
         model_name='KMEANS_K'+str(N_CLUSTERS)+'_W'+str(WINDOW_SIZE)+'_'+INIT_ALGORITHM+'_'+METRIC+'_'+AVERAGING_METHOD
         model = TimeSeriesKMeans(
             n_clusters=N_CLUSTERS,  # Number of desired centers
@@ -71,6 +72,7 @@ def train_clustering_model(model_type, folder, patients, WINDOW_SIZE, N_CLUSTERS
         print("The model has already been trained!")
         model = jl.load(model_folder + "/trained_model")
 
-    #plot_cluster_algorithm(model, X, model.n_clusters)
+    if plot_clusters:
+        plot_cluster_algorithm(model, X, model.n_clusters)
 
     #print("TRAINING COMPLETED (Model " + model_name + " ready)")
