@@ -30,7 +30,7 @@ guessed_hemiplegic_patients = 0
 guessed_healthy_patients = 0
 uncertain_patients = 0
 guessed = []
-hemi_percentage = []
+healthy_percentage = []
 
 for i in range (1,61):
 
@@ -67,7 +67,7 @@ for i in range (1,61):
     guess = not((cluster_hemiplegic_samples > cluster_healthy_samples) ^ is_hemiplegic)
     print('Patient ', i, ' guessed: ', guess)
     guessed.append(guess)
-    hemi_percentage.append((cluster_hemiplegic_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
+    healthy_percentage.append((cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
 
     if cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic:
         guessed_hemiplegic_patients += 1
@@ -78,7 +78,7 @@ for i in range (1,61):
 
 
 metadata['guessed'] = guessed
-metadata['hemi_percentage'] = hemi_percentage
+metadata['healthy_percentage'] = healthy_percentage
 print(metadata)
 
 folder_name = 'Blocco 1/week_predictions/' + model_name + '/'
@@ -91,4 +91,4 @@ with open(folder_name + 'predictions_stats.txt', "w") as f:
 
 metadata.to_csv(folder_name + 'predictions_dataframe.csv')
 
-metadata.plot.scatter(x='AHA', y='hemi_percentage', c='MACS').get_figure().savefig(folder_name + 'plot_AHA_hemiPerc.png')
+metadata.plot.scatter(x='AHA', y='healthy_percentage', c='MACS').get_figure().savefig(folder_name + 'plot_AHA_healthyPerc.png')
