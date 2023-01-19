@@ -9,19 +9,34 @@ import numpy as np
 folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 #folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
-model_name = 'KMEANS_K2_W900_kmeans++_euclidean_mean'
+model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
 model_folder = 'Blocco 1/60_patients/KMeans/' + model_name + '/'
 ############
 
+
+def save_plots(metadata):
+    metadata.plot.scatter(x='healthy_percentage', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AHA.png')
+    metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_week.png')
+    metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_aha.png')
+    #metadata.plot.scatter(x='AI_week', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_week_AHA.png')
+    #metadata.plot.scatter(x='AI_aha', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_aha_AHA.png')
+
+
 # Define the samples size
 match = re.search(r"_W(\d+)", model_folder)
-if match and os.path.exists(model_folder + "trained_model"):
+folder_name = 'Blocco 1/week_predictions/' + model_name + '/'
+
+if os.path.exists(folder_name + '/predictions_dataframe.csv'):
+    save_plots(pd.read_csv(folder_name + '/predictions_dataframe.csv'))
+    exit(0)
+elif match and os.path.exists(model_folder + "trained_model"):
     model = jl.load(model_folder + "trained_model")
     sample_size = int(match.group(1))
 else:
     print("Model not found or invalid sample size")
     exit(1)
+
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
@@ -81,7 +96,7 @@ metadata['guessed'] = guessed
 metadata['healthy_percentage'] = healthy_percentage
 print(metadata)
 
-folder_name = 'Blocco 1/week_predictions/' + model_name + '/'
+
 os.makedirs(folder_name, exist_ok=True)
 with open(folder_name + 'predictions_stats.txt', "w") as f:
     f.write("Guessed patients: " + str(guessed_healthy_patients + guessed_hemiplegic_patients) + "/60 (" + str(((guessed_healthy_patients + guessed_hemiplegic_patients)/60)*100) + "%)\n")
@@ -90,5 +105,4 @@ with open(folder_name + 'predictions_stats.txt', "w") as f:
     f.write("Uncertain patients: " + str(uncertain_patients) + "/60 (" + str((uncertain_patients/60)*100) + "%)")
 
 metadata.to_csv(folder_name + 'predictions_dataframe.csv')
-
-metadata.plot.scatter(x='AHA', y='healthy_percentage', c='MACS').get_figure().savefig(folder_name + 'plot_AHA_healthyPerc.png')
+save_plots(metadata)
