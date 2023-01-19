@@ -6,15 +6,13 @@ import numpy as np
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
-model_name = 'KMEANS_K2_W600_kmeans++_dtw_dba'
+model_name = 'KMEANS_K2_W900_kmeans++_euclidean_mean'
 
 model_folder = 'Blocco 1/60_patients/KMeans/' + model_name + '/'
 ############
-
-metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
 # Define the samples size
 match = re.search(r"_W(\d+)", model_folder)
@@ -26,11 +24,13 @@ else:
     exit(1)
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
+metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
 guessed_hemiplegic_patients = 0
 guessed_healthy_patients = 0
 uncertain_patients = 0
-predictions = []
+guessed = []
+hemi_percentage = []
 
 for i in range (1,61):
 
@@ -62,12 +62,12 @@ for i in range (1,61):
         else:
             cluster_healthy_samples += 1    
 
-
     is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
 
-    prediction = "Patient " + str(i) + " - Is hemiplegic? " + str(is_hemiplegic) + " - Predicted hemiplegic? " + str(cluster_hemiplegic_samples > cluster_healthy_samples)
-    print(prediction)
-    predictions.append(prediction)
+    guess = not((cluster_hemiplegic_samples > cluster_healthy_samples) ^ is_hemiplegic)
+    print('Patient ', i, ' guessed: ', guess)
+    guessed.append(guess)
+    hemi_percentage.append((cluster_hemiplegic_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
 
     if cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic:
         guessed_hemiplegic_patients += 1
@@ -77,10 +77,18 @@ for i in range (1,61):
         uncertain_patients += 1
 
 
-with open('Blocco 1/week_predictions/'+model_name+'.txt', 'w') as f:
+metadata['guessed'] = guessed
+metadata['hemi_percentage'] = hemi_percentage
+print(metadata)
+
+folder_name = 'Blocco 1/week_predictions/' + model_name + '/'
+os.makedirs(folder_name, exist_ok=True)
+with open(folder_name + 'predictions_stats.txt', "w") as f:
     f.write("Guessed patients: " + str(guessed_healthy_patients + guessed_hemiplegic_patients) + "/60 (" + str(((guessed_healthy_patients + guessed_hemiplegic_patients)/60)*100) + "%)\n")
     f.write("Guessed hemiplegic patients: " + str(guessed_hemiplegic_patients) + "/34 (" + str((guessed_hemiplegic_patients/34)*100) + "%)\n")
     f.write("Guessed healthy patients: " + str(guessed_healthy_patients) + "/26 (" + str((guessed_healthy_patients/26)*100) + "%)\n")
-    f.write("Uncertain patients: " + str(uncertain_patients) + "/60 (" + str((uncertain_patients/60)*100) + "%)\n\n")
-    for prediction in predictions:
-        f.write("%s\n" % prediction)
+    f.write("Uncertain patients: " + str(uncertain_patients) + "/60 (" + str((uncertain_patients/60)*100) + "%)")
+
+metadata.to_csv(folder_name + 'predictions_dataframe.csv')
+
+metadata.plot.scatter(x='AHA', y='hemi_percentage', c='MACS').get_figure().savefig(folder_name + 'plot_AHA_hemiPerc.png')
