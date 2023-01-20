@@ -7,12 +7,12 @@ from elaborate_magnitude import elaborate_magnitude
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
-operation_type = 'concat'
+operation_type = 'ai'
 
 model_folder = 'Blocco 1/'+ operation_type +'_version/60_patients/KMeans/' + model_name + '/'
 ############
@@ -74,7 +74,7 @@ for i in range (1,61):
     print("Inizio fase incrementi e stampe")
     for y in Y:
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
-        if y == 0:
+        if y == 1:
             cluster_hemiplegic_samples += 1
         else:
             cluster_healthy_samples += 1    
