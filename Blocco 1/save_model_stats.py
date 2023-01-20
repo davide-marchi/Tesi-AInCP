@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 from matplotlib.ticker import StrMethodFormatter
 
-def save_model_stats(X, y_AHA, y_MACS, y_pred, model, modelname, NCLUSTERS,model_folder):
+def save_model_stats(X, y_AHA, y_MACS, y_pred, model, NCLUSTERS, model_folder):
 
     stats = pd.DataFrame()
     stats['cluster'] = y_pred

@@ -3,6 +3,7 @@ import re
 import joblib as jl
 import os
 import numpy as np
+from elaborate_magnitude import elaborate_magnitude
 
 
 ############
@@ -11,7 +12,9 @@ folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
-model_folder = 'Blocco 1/60_patients/KMeans/' + model_name + '/'
+operation_type = 'concat'
+
+model_folder = 'Blocco 1/'+ operation_type +'_version/60_patients/KMeans/' + model_name + '/'
 ############
 
 
@@ -25,7 +28,7 @@ def save_plots(metadata):
 
 # Define the samples size
 match = re.search(r"_W(\d+)", model_folder)
-folder_name = 'Blocco 1/week_predictions/' + model_name + '/'
+folder_name = 'Blocco 1/'+ operation_type +'_version/week_predictions/' + model_name + '/'
 
 if os.path.exists(folder_name + '/predictions_dataframe.csv'):
     save_plots(pd.read_csv(folder_name + '/predictions_dataframe.csv'))
@@ -60,11 +63,10 @@ for i in range (1,61):
 
         magnitude_D = np.sqrt(np.square(chunk['x_D']) + np.square(chunk['y_D']) + np.square(chunk['z_D']))
         magnitude_ND = np.sqrt(np.square(chunk['x_ND']) + np.square(chunk['y_ND']) + np.square(chunk['z_ND']))
-        magnitude_concat = pd.concat([magnitude_D, magnitude_ND], ignore_index = True)
 
-        if magnitude_concat.agg('sum') != 0:
-            series.append(magnitude_concat)
-    
+        if magnitude_D.agg('sum') != 0 or magnitude_ND.agg('sum') != 0:
+            series.append(elaborate_magnitude(operation_type, magnitude_D, magnitude_ND))
+
 
     print("Inizio fase predizione")
     Y = model.predict(np.array(series))

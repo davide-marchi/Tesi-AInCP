@@ -12,7 +12,7 @@ from sktime.clustering.kernel_k_means import TimeSeriesKernelKMeans
 from sktime.clustering.utils.plotting._plot_partitions import plot_cluster_algorithm
 
 
-def train_clustering_model(folder, plot_clusters, patients, model_type, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC):
+def train_clustering_model(folder, plot_clusters, operation_type, patients, model_type, WINDOW_SIZE, N_CLUSTERS, INIT_ALGORITHM, METRIC):
 
     if (model_type == 'KMeans'):
         AVERAGING_METHOD = 'mean' # defaults
@@ -50,12 +50,12 @@ def train_clustering_model(folder, plot_clusters, patients, model_type, WINDOW_S
         print("Invalid model requested")
         exit(1)
 
-    series, y_AHA, y_MACS, total, taken, lost = create_windows(WINDOW_SIZE, folder, patients)
+    series, y_AHA, y_MACS, total, taken, lost = create_windows(WINDOW_SIZE, folder,operation_type, patients)
 
     # Create a DataFrame with a single column of Series objects
     X = pd.DataFrame({'series': series})
 
-    model_folder = "./Blocco 1/" + str(patients) + "_patients/" + model_type + "/" + model_name
+    model_folder = "./Blocco 1/"+operation_type+"_version/" + str(patients) + "_patients/" + model_type + "/" + model_name
 
     if not os.path.exists(model_folder + "/trained_model"):
         y_pred = model.fit_predict(X)
@@ -66,7 +66,7 @@ def train_clustering_model(folder, plot_clusters, patients, model_type, WINDOW_S
             f.write('Trained on = ' + str(taken) + ' seconds (' + str(taken/total*100) + ' % of total)\n')
             f.write('Cutted out = ' + str(lost) + ' seconds (' + str(lost/total*100) + ' % of total)\n\n')
 
-        save_model_stats(X, y_AHA, y_MACS, y_pred, model, model_name, N_CLUSTERS, model_folder)
+        save_model_stats(X, y_AHA, y_MACS, y_pred, model, N_CLUSTERS, model_folder)
 
     else:
         print("The model has already been trained!")

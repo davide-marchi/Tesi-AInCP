@@ -1,0 +1,65 @@
+Guessed patients: 27/60 (45.0%)
+Guessed hemiplegic patients: 1/34 (2.941176470588235%)
+Guessed healthy patients: 26/26 (100.0%)
+Uncertain patients: 0/60 (0.0%)
+
+Patient 1 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 2 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 3 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 4 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 5 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 6 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 7 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 8 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 9 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 10 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 11 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 12 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 13 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 14 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 15 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 16 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 17 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 18 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 19 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 20 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 21 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 22 - Is hemiplegic? True - Predicted hemiplegic? True
+Patient 23 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 24 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 25 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 26 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 27 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 28 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 29 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 30 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 31 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 32 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 33 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 34 - Is hemiplegic? True - Predicted hemiplegic? False
+Patient 35 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 36 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 37 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 38 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 39 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 40 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 41 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 42 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 43 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 44 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 45 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 46 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 47 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 48 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 49 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 50 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 51 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 52 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 53 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 54 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 55 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 56 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 57 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 58 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 59 - Is hemiplegic? False - Predicted hemiplegic? False
+Patient 60 - Is hemiplegic? False - Predicted hemiplegic? False

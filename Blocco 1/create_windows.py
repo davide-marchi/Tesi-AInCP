@@ -1,8 +1,9 @@
 import pandas as pd
 import math
 import numpy as np
+from elaborate_magnitude import elaborate_magnitude
 
-def create_windows(WINDOW_SIZE, folder, patients):
+def create_windows(WINDOW_SIZE, folder, operation_type, patients):
     series = []
     y_AHA = []
     y_MACS =[]
@@ -27,17 +28,17 @@ def create_windows(WINDOW_SIZE, folder, patients):
         
         df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
         lost += df.shape[0]-df_cut.shape[0]
+
+
         # Calculating magnitude
         magnitude_D = np.sqrt(np.square(df_cut['x_D']) + np.square(df_cut['y_D']) + np.square(df_cut['z_D']))
         magnitude_ND = np.sqrt(np.square(df_cut['x_ND']) + np.square(df_cut['y_ND']) + np.square(df_cut['z_ND']))
         for i in range (0, len(magnitude_D), WINDOW_SIZE):
             chunk_D = magnitude_D.iloc[i:i + WINDOW_SIZE]
             chunk_ND = magnitude_ND.iloc[i:i + WINDOW_SIZE]
-            # Concat
-            magnitude_concat = pd.concat([chunk_D, chunk_ND], ignore_index = True)
-            series.append(magnitude_concat)
+            series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
             y_AHA.append(metadata['AHA'].iloc[j-1])
             y_MACS.append(metadata['MACS'].iloc[j-1])
-            taken += len(magnitude_concat)/2
+            taken += WINDOW_SIZE
     
     return series, y_AHA, y_MACS, total, taken, lost
