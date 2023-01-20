@@ -1,7 +1,7 @@
 from diff_train_clustering_model import diff_train_clustering_model
 
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 plot_clusters = False
 
