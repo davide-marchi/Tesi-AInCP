@@ -5,13 +5,13 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 plot_clusters = False
 
-l_operation_type =      ['ai']   # ['concat','difference', 'ai']
-l_patients =            [60]                            # [34, 60]
-l_model_type =          ['KMeans']                      # ['KMeans', 'KShapes', 'KernelKMeans', 'KMedoids']
-l_window_size =         [600]                           # [300, 600, 900] 
-l_n_clusters =          [2]                       # [2, 3, 4, 6, 8, 10, 12, 14, 16, 24, 32, 40, 60]
+l_operation_type =      ['ai', 'difference']   # ['concat','difference', 'ai']
+l_patients =            [60, 34]                            # [34, 60]
+l_model_type =          ['KMedoids']                      # ['KMeans', 'KShapes', 'KernelKMeans', 'KMedoids']
+l_window_size =         [300,600,900]                           # [300, 600, 900] 
+l_n_clusters =          [2,3,4]                       # [2, 3, 4, 6, 8, 10, 12, 14, 16, 24, 32, 40, 60]
 l_init_algorithm =      ['kmeans++']                    # ['kmeans++', 'forgy', 'random']
-l_metric =              ['euclidean']            # ['euclidean', 'dtw']
+l_metric =              ['dtw']            # ['euclidean', 'dtw']
 
 
 models_number = len(l_operation_type) *len(l_patients)* len(l_model_type) * len(l_window_size) * len(l_n_clusters) * len(l_init_algorithm) * len(l_metric)

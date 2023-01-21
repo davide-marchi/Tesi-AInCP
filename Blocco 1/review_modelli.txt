@@ -1,0 +1,121 @@
+AI VERSION:
+
+34 PAZIENTI:
+
+    KMEANS:
+        KMEANS_K2_W300_kmeans++_euclidean_mean:
+            sembra esserci un pattern nella suddivisione dei malati. lieve ma c'è
+
+        KMEANS_K3_W300_kmeans++_dtw_dba
+            lieve significatività, ignora outliers ma non forte correlazione con AHA
+
+        KMEANS_K3_W300_kmeans++_euclidean_mean:
+            molto buono, medie a scaletta, suddivisione interessante
+
+        KMEANS_K4_W300_kmeans++_dtw_dba:
+            medie e mediane hanno senso, se si vuole. buona distribuzione della densità
+
+        osservazioni:
+            k=5 e k=6 praticamente sempre non resistenti e non significativi.
+            dtw quasi sempre peggio di euclidean
+    
+    KMEDOIDS:
+        KMEDOIDS_K2_W600_kmeans++_dtw:
+            non è male, buone medie, peccato per la distribuzione
+
+        osservazioni:
+            funziona peggio di kmeans
+
+60 PAZIENTI:
+
+    KMEANS:
+        PER K = 2 SONO TUTTI OTTIMI, nell'ordine 600/900, e poi 300 un po' peggio ma comunque ottimo
+        KMEANS_K2_W600_kmeans++_euclidean_mean:
+            ha accuracy 100% !
+
+        KMEANS_K3_W300_kmeans++_euclidean_mean:
+            non male nella distinzione, un po' confuso sui sani
+
+        KMEANS_K4_W300_kmeans++_dtw_dba:
+            come sopra, ma sembra dividere outliers, sani, meno sani, malati
+
+        osservazioni:
+            k=5 e k=6 praticamente sempre non resistenti e non significativi.
+            dtw quasi sempre peggio di euclidean
+            per i k=2 c'è il modello 600 euclidean che ha 100% accuracy, ma 55% nel test. 
+
+    KMEDOIDS:
+        PER K=2 SONO OTTIMI, ma peggio del kmeans
+
+        osservazioni:
+            per k>2 sono tutti pessimi, pochi cluster interessanti (scaletta sui macs 3)
+
+---------------------------------------------------------------------------------------
+
+CONCAT VERSION:
+
+34 PAZIENTI:
+
+    KMEANS:
+
+        nessun modello sembra suddividere in maniera adeguata i malati. 
+        tutti i cluster si somigliano in termini di medie, e distribuzione MACS (2, 1, 3)
+
+    KMEDOIDS:
+
+        come sopra, ma peggio
+
+60 PAZIENTI:
+
+    KERNELKMEANS:
+        sembra che faccia uno split 50-50
+
+    KSHAPES:
+        non funziona
+
+    KMEANS:
+
+        KMEANS_K2_W600_kmeans++_dtw_dba:
+            buono, ma considerando che è la versione dtw del più promettente
+        
+        KMEANS_K2_W600_kmeans++_euclidean_mean:
+            the original goat, testato con accuracy 96%, sembra il più promettente
+
+        KMEANS_K2_W900_kmeans++_euclidean_mean:
+            sbaglia lo stesso numero di questo sopra, ma da stessa accuracy in fase di test
+
+        KMEANS_K3_W600_kmeans++_euclidean_mean:
+            fa una quasi buona suddivisione, ma non ben distribuita e le medie si somigliano
+
+        osservazioni:
+            alcuni modelli (i primi k=3) suddividono in maniera quasi decente, ma raggruppano i MACS 3 con i MACS 0 , e i MACS 2 con i MACS 1 
+            da k=4 iniziano a non essere più significativi
+            tendenza a distribuire i sani in maniera 60- 30- 10
+
+    KMEDOIDS:
+        nessuno buono, non riesce a distinguere i sani, che tende a equidistribuire
+
+----------------------------------------------------------------------------------------
+
+DIFFERENCE VERSION:
+
+34 PATIENTS:
+
+    KMEANS:
+        nessuno buono, alcuni ci provano ma medie simili, non ben distribuiti, dal 4 in su nonsense
+
+    KMEDOIDS:
+        nessuno buono, alcuni ci provano ma medie simili, non ben distribuiti, comunque peggio del kmeans
+
+60 PATIENTS:
+
+    KMEANS:
+        PER K=2 SONO TUTTI OTTIMI, il migliore è 600dtw, che batte anche 600euclidean, sbaglia il 78, mentre 900euclidean sbaglia solo un 100
+
+        per gli altri, il meno peggio è KMEANS_K4_W300_kmeans++_euclidean_mean, che comunque fa casino, non è perfettamente distribuito, ma ha delle medie quasi sensate
+        per k>4 è tutto da buttare
+    
+    KMEDOIDS:
+        PER K=2 SONO TUTTI OTTIMI, il migliore è 600dtw, che batte anche 600euclidean, sbaglia il 78, mentre 900euclidean sbaglia solo un 100
+
+        per gli altri è tutto da buttare, come kmeans ma peggio
