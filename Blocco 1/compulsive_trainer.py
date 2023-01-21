@@ -5,10 +5,10 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 plot_clusters = False
 
-l_operation_type =      ['concat','difference', 'ai']   # ['concat','difference', 'ai']
+l_operation_type =      ['ai']   # ['concat','difference', 'ai']
 l_patients =            [60]                            # [34, 60]
 l_model_type =          ['KMeans']                      # ['KMeans', 'KShapes', 'KernelKMeans', 'KMedoids']
-l_window_size =         [900]                           # [300, 600, 900] 
+l_window_size =         [600]                           # [300, 600, 900] 
 l_n_clusters =          [2]                       # [2, 3, 4, 6, 8, 10, 12, 14, 16, 24, 32, 40, 60]
 l_init_algorithm =      ['kmeans++']                    # ['kmeans++', 'forgy', 'random']
 l_metric =              ['euclidean']            # ['euclidean', 'dtw']

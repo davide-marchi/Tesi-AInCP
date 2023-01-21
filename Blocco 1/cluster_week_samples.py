@@ -27,7 +27,7 @@ def save_plots(metadata):
 
 
 # Define the samples size
-match = re.search(r"_W(\d+)", model_folder)
+match = re.search(r"_W(\d+)", model_name)
 folder_name = 'Blocco 1/'+ operation_type +'_version/week_predictions/' + model_name + '/'
 
 if os.path.exists(folder_name + '/predictions_dataframe.csv'):
@@ -43,6 +43,9 @@ else:
 
 metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
+
+stats = pd.read_csv(model_folder + 'statistiche.csv')
+hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 
 guessed_hemiplegic_patients = 0
 guessed_healthy_patients = 0
@@ -74,7 +77,7 @@ for i in range (1,61):
     print("Inizio fase incrementi e stampe")
     for y in Y:
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
-        if y == 1:
+        if y == hemi_cluster:
             cluster_hemiplegic_samples += 1
         else:
             cluster_healthy_samples += 1    

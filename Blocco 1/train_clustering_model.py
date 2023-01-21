@@ -1,7 +1,6 @@
 import os
-import pandas as pd
+import numpy as np
 import joblib as jl
-import matplotlib.pyplot as plt
 from create_windows import create_windows
 from save_model_stats import save_model_stats
 
@@ -53,7 +52,7 @@ def train_clustering_model(folder, plot_clusters, operation_type, patients, mode
     series, y_AHA, y_MACS, total, taken, lost = create_windows(WINDOW_SIZE, folder,operation_type, patients)
 
     # Create a DataFrame with a single column of Series objects
-    X = pd.DataFrame({'series': series})
+    X = np.array(series)
 
     model_folder = "./Blocco 1/"+operation_type+"_version/" + str(patients) + "_patients/" + model_type + "/" + model_name
 
