@@ -11,10 +11,10 @@ df = pd.read_csv('Blocco 1/concat_version/week_predictions/KMEANS_K2_W600_kmeans
 X = df[['healthy_percentage']].values
 y = df['AHA'].values
 
+# Coefficiente di correlazione = 0.89 per 60 pazienti e 0.37477669 per 34 pazienti
+print("Corefficiente di corrleazione tra healty_percentage e AHA: \n", np.corrcoef(df['healthy_percentage'].values, df['AHA'].values)) #TODO
 
-print(np.corrcoef(X[0], y)) #TODO
 
-'''
 # Create the linear regression object
 lin_reg = LinearRegression()
 
@@ -50,4 +50,3 @@ plt.plot(X, lin_reg.predict(X), color='red')
 plt.xlabel('healthy_percentage')
 plt.ylabel('AHA')
 plt.show()
-'''
