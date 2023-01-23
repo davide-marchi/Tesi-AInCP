@@ -7,8 +7,8 @@ from elaborate_magnitude import elaborate_magnitude
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
