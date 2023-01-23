@@ -6,11 +6,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 
 # Reading the dataframe
-df = pd.read_csv('Blocco 1/week_predictions/KMEANS_K2_W600_kmeans++_euclidean_mean/predictions_dataframe.csv', nrows=34)
+df = pd.read_csv('Blocco 1/concat_version/week_predictions/KMEANS_K2_W600_kmeans++_euclidean_mean/predictions_dataframe.csv', nrows=34)
 
 X = df[['healthy_percentage']].values
 y = df['AHA'].values
 
+
+print(np.corrcoef(X[0], y)) #TODO
+
+'''
 # Create the linear regression object
 lin_reg = LinearRegression()
 
@@ -26,7 +30,7 @@ print('Mean absolute error = ', np.mean(np.absolute(scores)))
 print('RMSE = ', np.sqrt(np.mean(np.absolute(scores))))
 
 
-
+#############################################################################################
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
 
@@ -46,3 +50,4 @@ plt.plot(X, lin_reg.predict(X), color='red')
 plt.xlabel('healthy_percentage')
 plt.ylabel('AHA')
 plt.show()
+'''
