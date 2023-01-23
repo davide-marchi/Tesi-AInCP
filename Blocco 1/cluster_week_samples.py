@@ -12,7 +12,7 @@ folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
-operation_type = 'ai'
+operation_type = 'concat'
 
 model_folder = 'Blocco 1/'+ operation_type +'_version/60_patients/KMeans/' + model_name + '/'
 ############
