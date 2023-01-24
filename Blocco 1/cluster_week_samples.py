@@ -33,6 +33,7 @@ match = re.search(r"_W(\d+)", model_name)
 folder_name = 'Blocco 1/'+ operation_type +'_version/week_predictions/' + model_name + '/'
 
 if os.path.exists(folder_name + '/predictions_dataframe.csv'):
+    print("Model already tested")
     save_plots(pd.read_csv(folder_name + '/predictions_dataframe.csv'))
     exit(0)
 elif match and os.path.exists(model_folder + "trained_model"):
@@ -60,6 +61,7 @@ for i in range (1,61):
     cluster_hemiplegic_samples = 0 #malati
     cluster_healthy_samples = 0 #sani
     series = []
+    to_discard = []
 
     df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv')
     
@@ -77,34 +79,42 @@ for i in range (1,61):
         if chunk_D.size != sample_size:
             print("YOOOOOOOOOOOOOOO")# LO STAMPERà MAI???????????????
 
-        if chunk_D.agg('sum') != 0 or chunk_ND.agg('sum') != 0: 
-            series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
+        series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
+
+        if chunk_D.agg('sum') == 0 and chunk_ND.agg('sum') == 0:
+            to_discard.append(int(j/sample_size))
 
 
     print("Inizio fase predizione")
     Y = model.predict(np.array(series))
 
-
-    for k in range(len(magnitude_ND) - 1):
-        if k < 500:
-            plt.plot(magnitude_D[k:k+2], 'b-')
-        elif k == 500:
-            plt.plot(magnitude_D[k:k+2], 'g-')
-        elif k > 500:
-            plt.plot(magnitude_D[k:k+2], 'r-')
-    plt.plot(magnitude_D)
-    plt.show()
-    plt.close()
-
+    for index in to_discard:
+        Y[index] = -1
 
 
     print("Inizio fase incrementi e stampe")
-    for y in Y:
+    for k in range(len(Y)):
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
-        if y == hemi_cluster:
+        if Y[k] == hemi_cluster:
             cluster_hemiplegic_samples += 1
+            Y[k] = -1
+        elif Y[k] != -1:
+            cluster_healthy_samples += 1  
+            Y[k] = 1
         else:
-            cluster_healthy_samples += 1    
+            Y[k] = 0
+
+
+    '''
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Vertically stacked subplots')
+    axs[0].plot(magnitude_D)
+    axs[0].plot(magnitude_ND)
+    axs[1].plot(Y)
+    plt.show()
+    plt.close()
+    '''
+
 
     is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
 
