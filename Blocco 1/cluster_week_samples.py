@@ -104,16 +104,24 @@ for i in range (1,61):
         else:
             Y[k] = 0
 
-
-    '''
-    fig, axs = plt.subplots(2)
+    ############# ANDAMENTO #############
+    h_perc_list = []
+    subList = [Y[n:n+100] for n in range(0, len(Y), 100)]
+    for l in subList:
+        n_hemi = l.tolist().count(-1)
+        n_healthy = l.tolist().count(1)
+        h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
+    #####################################
+    
+    fig, axs = plt.subplots(3)
     fig.suptitle('Vertically stacked subplots')
     axs[0].plot(magnitude_D)
     axs[0].plot(magnitude_ND)
-    axs[1].plot(Y)
+    axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg')
+    axs[2].plot(h_perc_list) # da verificare!
     plt.show()
     plt.close()
-    '''
+    
 
 
     is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
