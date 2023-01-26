@@ -105,9 +105,11 @@ for i in range (1,61):
             Y[k] = 0
 
 
-    ############# ANDAMENTO #############
+
+    trend_block_size = 36
+    ############# ANDAMENTO A BLOCCHI #############
     h_perc_list = []
-    subList = [Y[n:n+100] for n in range(0, len(Y), 100)]
+    subList = [Y[n:n+trend_block_size] for n in range(0, len(Y), trend_block_size)]
     for l in subList:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
@@ -115,17 +117,33 @@ for i in range (1,61):
             h_perc_list.append(-1)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
-
     #####################################
-    
+
+    '''
+    ############# ANDAMENTO SMOOTH #############
+    h_perc_list_smooth = []
+    subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
+    for l in subList_smooth:
+
+        print(len(l))
+
+        n_hemi = l.tolist().count(-1)
+        n_healthy = l.tolist().count(1)
+        if (n_hemi == 0 and n_healthy == 0):
+            h_perc_list_smooth.append(-1)
+        else:
+            h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+    #####################################
+    '''
+
     fig, axs = plt.subplots(3)
     fig.suptitle('Vertically stacked subplots')
     axs[0].plot(magnitude_D)
     axs[0].plot(magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg')
     #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
-    axs[2].plot(h_perc_list) # da verificare!
-    #plt.show()
+    axs[2].plot(h_perc_list)
+    plt.show()
     plt.close()
 
     
