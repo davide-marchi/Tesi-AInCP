@@ -104,13 +104,18 @@ for i in range (1,61):
         else:
             Y[k] = 0
 
+
     ############# ANDAMENTO #############
     h_perc_list = []
     subList = [Y[n:n+100] for n in range(0, len(Y), 100)]
     for l in subList:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
-        h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
+        if (n_hemi == 0 and n_healthy == 0):
+            h_perc_list.append(-1)
+        else:
+            h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
+
     #####################################
     
     fig, axs = plt.subplots(3)
@@ -118,9 +123,11 @@ for i in range (1,61):
     axs[0].plot(magnitude_D)
     axs[0].plot(magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg')
+    #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
     axs[2].plot(h_perc_list) # da verificare!
-    plt.show()
+    #plt.show()
     plt.close()
+
     
 
 
@@ -128,8 +135,13 @@ for i in range (1,61):
 
     guess = not((cluster_hemiplegic_samples > cluster_healthy_samples) ^ is_hemiplegic)
     print('Patient ', i, ' guessed: ', guess)
-    guessed.append(guess)
-    healthy_percentage.append((cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
+    guessed.append(guess)   # I PAZIENTI INCERTI VENGONO CONSIDERATI GUESSED SE NON EMIPLEGICI
+    # Potremmo fare che se hemi = healthy sei considerato hemi (?)
+
+    if (cluster_healthy_samples == 0 and cluster_hemiplegic_samples == 0):
+        healthy_percentage.append(np.nan)
+    else:
+        healthy_percentage.append((cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
 
     if cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic:
         guessed_hemiplegic_patients += 1
