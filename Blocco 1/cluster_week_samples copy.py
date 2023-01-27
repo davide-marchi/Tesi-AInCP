@@ -145,16 +145,43 @@ for i in range (1,61):
     axs[2].plot(h_perc_list)
     plt.show()
     plt.close()
+    sub_Y = np.array_split(Y, 6)
     fig1, axs1 = plt.subplots(2,3)
     fig1.suptitle('daily trend')
-    for i in range(0,2):
-        for j in range(0,3):
-            subplots_day_D = [magnitude_D[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_D), int(len(magnitude_D)/6))]
-            subplots_day_ND = [magnitude_ND[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_ND),int(len(magnitude_D)/6))]
-            for l in subplots_day_D:
-                for z in subplots_day_ND:
-                    axs1[i][j].plot(l)
-                    axs1[i][j].plot(z)
+    subplots_day_D = [magnitude_D[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_D), int(len(magnitude_D)/6))]
+    subplots_day_ND = [magnitude_ND[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_ND),int(len(magnitude_D)/6))]
+    '''
+    for z in range(0,3):
+        where_0= np.where(Y[z]==0)
+        where_1= np.where(Y[z]==1)
+        where_neg_1= np.where(Y[z]==-1)
+        axs1[0][z].plot(subplots_day_D[z],where=where_0,c='red')
+        axs1[0][z].plot(subplots_day_D[z],where=where_1,c='green')
+        axs1[0][z].plot(subplots_day_D[z],where=where_neg_1,c='blue')
+        #axs1[0][z].plot(subplots_day_ND[z])
+        where_0= np.where(Y[z+3]==0)
+        where_1= np.where(Y[z+3]==1)
+        where_neg_1= np.where(Y[z+3]==-1)
+        axs1[1][z].plot(subplots_day_D[z+3],where=where_0,c='red')
+        axs1[1][z].plot(subplots_day_D[z+3],where=where_1,c='green')
+        axs1[1][z].plot(subplots_day_D[z+3],where=where_neg_1,c='blue')
+        #axs1[1][z].plot(subplots_day_ND[z+3])
+    '''
+    kek=-3
+    for z in range(0,2):
+        kek+=3
+        for a in range(0,3):
+            where_1 = sub_Y[a+kek] == 1
+            where_0 = sub_Y[a+kek] == 0
+            where_n1 = sub_Y[a+kek] == -1
+            print(len(where_0))
+            print(len(where_1))
+            print(len(where_n1))
+            print(len(subplots_day_D[a+kek]))
+            print(len(subplots_day_D[a+kek][where_1]))
+            axs1[z, a].plot(subplots_day_D[a+kek][where_1], c='green')
+            axs1[z, a].plot(subplots_day_D[a+kek][where_0], c='red')
+            axs1[z, a].plot(subplots_day_D[a+kek][where_n1], c='blue')
     plt.show()
     plt.close()
 
