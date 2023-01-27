@@ -50,13 +50,10 @@ metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'],
 stats = pd.read_csv(model_folder + 'statistiche.csv')
 hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 
-guessed_hemiplegic_patients = 0
-guessed_healthy_patients = 0
-uncertain_patients = 0
 guessed = []
 healthy_percentage = []
 
-for i in range (1,61):
+for i in range (35,61):
 
     cluster_hemiplegic_samples = 0 #malati
     cluster_healthy_samples = 0 #sani
@@ -117,74 +114,61 @@ for i in range (1,61):
             h_perc_list.append(-1)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
-    #####################################
+    ##################################################### WEEKLY TREND
 
-    '''
-    ############# ANDAMENTO SMOOTH #############
-    h_perc_list_smooth = []
-    subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
-    for l in subList_smooth:
-
-        print(len(l))
-
-        n_hemi = l.tolist().count(-1)
-        n_healthy = l.tolist().count(1)
-        if (n_hemi == 0 and n_healthy == 0):
-            h_perc_list_smooth.append(-1)
-        else:
-            h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
-    #####################################
-    '''
-
-    fig, axs = plt.subplots(3)
+    fig, axs = plt.subplots(4)
     fig.suptitle('week trend')
     axs[0].plot(magnitude_D)
     axs[0].plot(magnitude_ND)
-    axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg')
+    axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
     #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
+    axs[2].set_ylim([-1,101])
+    axs[2].grid()
     axs[2].plot(h_perc_list)
+    axs[3].plot(list(filter(lambda a : a!=-1,h_perc_list)))
+    axs[3].grid()
+    axs[3].set_ylim([-1,101])
     plt.show()
     plt.close()
+
+    ################################################### DAILY TREND
     sub_Y = np.array_split(Y, 6)
     fig1, axs1 = plt.subplots(2,3)
     fig1.suptitle('daily trend')
     subplots_day_D = [magnitude_D[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_D), int(len(magnitude_D)/6))]
     subplots_day_ND = [magnitude_ND[n:n+int(len(magnitude_D)/6)] for n in range(0, len(magnitude_ND),int(len(magnitude_D)/6))]
-    '''
-    for z in range(0,3):
-        where_0= np.where(Y[z]==0)
-        where_1= np.where(Y[z]==1)
-        where_neg_1= np.where(Y[z]==-1)
-        axs1[0][z].plot(subplots_day_D[z],where=where_0,c='red')
-        axs1[0][z].plot(subplots_day_D[z],where=where_1,c='green')
-        axs1[0][z].plot(subplots_day_D[z],where=where_neg_1,c='blue')
-        #axs1[0][z].plot(subplots_day_ND[z])
-        where_0= np.where(Y[z+3]==0)
-        where_1= np.where(Y[z+3]==1)
-        where_neg_1= np.where(Y[z+3]==-1)
-        axs1[1][z].plot(subplots_day_D[z+3],where=where_0,c='red')
-        axs1[1][z].plot(subplots_day_D[z+3],where=where_1,c='green')
-        axs1[1][z].plot(subplots_day_D[z+3],where=where_neg_1,c='blue')
-        #axs1[1][z].plot(subplots_day_ND[z+3])
-    '''
     kek=-3
     for z in range(0,2):
         kek+=3
         for a in range(0,3):
-            where_1 = sub_Y[a+kek] == 1
-            where_0 = sub_Y[a+kek] == 0
-            where_n1 = sub_Y[a+kek] == -1
-            print(len(where_0))
-            print(len(where_1))
-            print(len(where_n1))
-            print(len(subplots_day_D[a+kek]))
-            print(len(subplots_day_D[a+kek][where_1]))
-            axs1[z, a].plot(subplots_day_D[a+kek][where_1], c='green')
-            axs1[z, a].plot(subplots_day_D[a+kek][where_0], c='red')
-            axs1[z, a].plot(subplots_day_D[a+kek][where_n1], c='blue')
+            sub_Y_multiplied=[]
+            for el in sub_Y[a+kek]:
+                for u in range(sample_size):
+                    sub_Y_multiplied.append(el)
+        
+            #axs1[z, a].scatter(list(range(len(subplots_day_D[a+kek]))), subplots_day_D[a+kek], c=sub_Y_multiplied, cmap= 'brg', s=5, alpha=0.5)
+            #axs1[z, a].scatter(list(range(len(subplots_day_ND[a+kek]))), subplots_day_D[a+kek], c=sub_Y_multiplied, cmap= 'brg',s=5, alpha=0.5)          
+            
+            subplotD = [subplots_day_D[a+kek].iloc[n:n+sample_size] for n in range(0, len(subplots_day_D[a+kek]), sample_size)]
+            subplotND = [subplots_day_ND[a+kek].iloc[n:n+sample_size] for n in range(0, len(subplots_day_ND[a+kek]), sample_size)]
+            for s in range(len(subplotD)):
+                if sub_Y[a+kek][s] == 0:
+                    axs1[z, a].plot(subplotD[s], color='darkred', alpha=0.5)
+                    axs1[z, a].plot(subplotND[s], color='red', alpha=0.5)
+                elif sub_Y[a+kek][s] == 1:
+                    axs1[z, a].plot(subplotD[s], color='darkgreen', alpha=0.5)
+                    axs1[z, a].plot(subplotND[s], color='green', alpha=0.5)
+                else:
+                    axs1[z, a].plot(subplotD[s], color='darkblue', alpha=0.5)
+                    axs1[z, a].plot(subplotND[s], color='blue', alpha=0.5)
+
+
+
     plt.show()
     plt.close()
 
+    ################################################### DAILY TREND  
+    
     
 
 
@@ -192,25 +176,21 @@ for i in range (1,61):
 
     guess =not((cluster_hemiplegic_samples > cluster_healthy_samples) ^ is_hemiplegic) if cluster_hemiplegic_samples!=cluster_healthy_samples else 'uncertain'
     print('Patient ', i, ' guessed: ', guess)
-    guessed.append(guess)
+    guessed.append('guess')
 
     if (cluster_healthy_samples == 0 and cluster_hemiplegic_samples == 0):
         healthy_percentage.append(np.nan)
     else:
         healthy_percentage.append((cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
 
-    if cluster_hemiplegic_samples > cluster_healthy_samples and is_hemiplegic:
-        guessed_hemiplegic_patients += 1
-    elif cluster_hemiplegic_samples < cluster_healthy_samples and not is_hemiplegic:
-        guessed_healthy_patients += 1
-    elif cluster_hemiplegic_samples == cluster_healthy_samples:
-        uncertain_patients += 1
-
 
 metadata['guessed'] = guessed
 metadata['healthy_percentage'] = healthy_percentage
 print(metadata)
 
+guessed_hemiplegic_patients = len(metadata[(metadata['hemi']==2) & (metadata['guessed']==True)])
+guessed_healthy_patients = len(metadata[(metadata['hemi']==1) & (metadata['guessed']==True)])
+uncertain_patients = guessed.count('uncertain')
 
 os.makedirs(folder_name, exist_ok=True)
 with open(folder_name + 'predictions_stats.txt', "w") as f:
