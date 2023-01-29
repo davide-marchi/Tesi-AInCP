@@ -9,8 +9,8 @@ from elaborate_magnitude import elaborate_magnitude
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -53,7 +53,7 @@ hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 guessed = []
 healthy_percentage = []
 
-for i in range (35,61):
+for i in range (1,61):
 
     cluster_hemiplegic_samples = 0 #malati
     cluster_healthy_samples = 0 #sani
@@ -117,12 +117,25 @@ for i in range (35,61):
 
     #####################################################
 
-    '''
+    
     ############# ANDAMENTO SMOOTH #############
     h_perc_list_smooth = []
     subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
     for l in subList_smooth:
-        print(len(l))
+        n_hemi = l.tolist().count(-1)
+        n_healthy = l.tolist().count(1)
+        if (n_hemi == 0 and n_healthy == 0):
+            h_perc_list_smooth.append(-1)
+        else:
+            h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+    #####################################
+    
+
+    '''
+    ############# ANDAMENTO ULTIMI TREND_BLOCK_SIZE non scartati #############
+    h_perc_list_smooth = []
+    subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
+    for l in subList_smooth:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
         if (n_hemi == 0 and n_healthy == 0):
@@ -134,18 +147,21 @@ for i in range (35,61):
 
     ##################################################### WEEKLY TREND
 
-    fig, axs = plt.subplots(4)
+    fig, axs = plt.subplots(5)
     fig.suptitle('week trend')
     axs[0].plot(magnitude_D)
     axs[0].plot(magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
     #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
-    axs[2].set_ylim([-1,101])
     axs[2].grid()
+    axs[2].set_ylim([-1,101])
     axs[2].plot(h_perc_list)
-    axs[3].plot(list(filter(lambda a : a!=-1,h_perc_list)))
     axs[3].grid()
     axs[3].set_ylim([-1,101])
+    axs[3].plot(list(filter(lambda a : a!=-1,h_perc_list)))
+    axs[4].grid()
+    axs[4].set_ylim([-1,101])
+    axs[4].plot(h_perc_list_smooth)
     plt.show()
     plt.close()
 
