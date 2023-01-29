@@ -114,6 +114,24 @@ for i in range (35,61):
             h_perc_list.append(-1)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
+
+    #####################################################
+
+    '''
+    ############# ANDAMENTO SMOOTH #############
+    h_perc_list_smooth = []
+    subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
+    for l in subList_smooth:
+        print(len(l))
+        n_hemi = l.tolist().count(-1)
+        n_healthy = l.tolist().count(1)
+        if (n_hemi == 0 and n_healthy == 0):
+            h_perc_list_smooth.append(-1)
+        else:
+            h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+    #####################################
+    '''
+
     ##################################################### WEEKLY TREND
 
     fig, axs = plt.subplots(4)
