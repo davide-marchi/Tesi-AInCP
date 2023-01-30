@@ -133,17 +133,29 @@ for i in range (1,61):
 
     '''
     ############# ANDAMENTO ULTIMI TREND_BLOCK_SIZE non scartati #############
-    h_perc_list_smooth = []
+    h_perc_list_kept = []
+    trend_block = []         #da controllare
+    for i in range(trend_block_size, len(Y)):
+        h_perc_list_kept
+        if len(trend_block) == trend_block_size:
+            trend_block.pop(0)
+            trend
+    '''
+
+
+
+
+
     subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
     for l in subList_smooth:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
         if (n_hemi == 0 and n_healthy == 0):
-            h_perc_list_smooth.append(-1)
+            h_perc_list_kept.append(-1)
         else:
-            h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+            h_perc_list_kept.append((n_healthy / (n_hemi + n_healthy)) * 100)
     #####################################
-    '''
+    
 
     ##################################################### WEEKLY TREND
 
