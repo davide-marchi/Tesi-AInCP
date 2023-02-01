@@ -43,20 +43,22 @@ def test_clustering_model(folder, model_name, operation_type, model_folder):
 
     for i in range (1,61):
 
-        df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv', chunksize=sample_size)
+        df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv')
 
         cluster_hemiplegic_samples = 0 #malati
         cluster_healthy_samples = 0 #sani
         series = []
-        
-        for chunk in df:
 
-            magnitude_D = np.sqrt(np.square(chunk['x_D']) + np.square(chunk['y_D']) + np.square(chunk['z_D']))
-            magnitude_ND = np.sqrt(np.square(chunk['x_ND']) + np.square(chunk['y_ND']) + np.square(chunk['z_ND']))
+        magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
+        magnitude_ND = np.sqrt(np.square(df['x_ND']) + np.square(df['y_ND']) + np.square(df['z_ND']))
 
-            if magnitude_D.agg('sum') != 0 or magnitude_ND.agg('sum') != 0:
-                series.append(elaborate_magnitude(operation_type, magnitude_D, magnitude_ND))
+        for j in range (0, len(magnitude_D), sample_size):
 
+            chunk_D = magnitude_D.iloc[j:j + sample_size]
+            chunk_ND = magnitude_ND.iloc[j:j + sample_size]
+
+            if chunk_D.agg('sum') != 0 or chunk_ND.agg('sum') != 0:
+                series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
 
         Y = model.predict(np.array(series))
 

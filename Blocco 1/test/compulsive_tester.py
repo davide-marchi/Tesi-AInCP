@@ -7,11 +7,11 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 plot_clusters = False
 
-l_operation_type =      ['ai', 'difference', 'concat']   # ['concat','difference', 'ai']
+l_operation_type =      ['concat']   # ['concat','difference', 'ai']
 l_patients =            [60]                             # [34, 60]
 l_model_type =          ['KMeans']                       # ['KMeans','KMedoids']
 l_window_size =         [300,600,900]                    # [300, 600, 900] 
-l_metric =              ['dtw_dba']               # ['euclidean_mean', 'dtw_dba']
+l_metric =              ['euclidean_mean']               # ['euclidean_mean', 'dtw_dba']
 
 
 models_number = len(l_operation_type) *len(l_patients)* len(l_model_type) * len(l_window_size) * len(l_metric)

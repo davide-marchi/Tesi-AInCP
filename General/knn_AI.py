@@ -15,8 +15,11 @@ from sklearn import neighbors, datasets
 from sklearn.inspection import DecisionBoundaryDisplay
 
 n_neighbors = 10
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
-df = pd.read_excel('only AC/metadata2022_04.xlsx')
+
+df = pd.read_excel(folder+'metadata2022_04.xlsx')
 
 X = df[['AI_aha','AI_week']]
 y = df['MACS']

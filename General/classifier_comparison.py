@@ -69,8 +69,9 @@ classifiers = [
     GaussianNB(),
     QuadraticDiscriminantAnalysis(),
 ]
-
-df = pd.read_excel('only AC/metadata2022_04.xlsx')
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+df = pd.read_excel(folder+'metadata2022_04.xlsx')
 X = df[['AI_aha','AI_week']].to_numpy()
 y = df['MACS'].to_numpy()
 
