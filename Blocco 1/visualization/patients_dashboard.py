@@ -5,12 +5,14 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from elaborate_magnitude import elaborate_magnitude
+from datetime import datetime
+import matplotlib
 
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -125,11 +127,19 @@ for i in range (1,61):
             Y[k] = 0
 
 
-
+    date = []
     fig, axs = plt.subplots(5)
     fig.suptitle('Patient ' + str(i) + ' week trend')
-    axs[0].plot(magnitude_D)
-    axs[0].plot(magnitude_ND)
+    for str in df['datetime']:
+        date.append(matplotlib.dates.date2num(datetime.strptime(str, '%Y-%m-%d %H:%M:%S')))
+
+    #axs[0].xaxis.set_minor_locator(matplotlib.dates.DayLocator())
+    #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%d'))
+    axs[0].xaxis.set_major_locator(matplotlib.dates.HourLocator())
+    axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H-%M'))
+    axs[0].tick_params(pad=10)
+    axs[0].plot(date,magnitude_D)
+    axs[0].plot(date,magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
     #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
     trend_block_size = 36
@@ -141,7 +151,7 @@ for i in range (1,61):
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
         if (n_hemi == 0 and n_healthy == 0):
-            h_perc_list.append(-1)
+            h_perc_list.append(np.nan)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
@@ -154,7 +164,20 @@ for i in range (1,61):
     axs[3].grid()
     axs[3].set_ylim([-1,101])
     axs[3].plot(list(filter(lambda a : a!=-1,h_perc_list)))
+    '''
+    ###################### AI PLOT ###############################
+    ai_list = []
+    subList_magD = [magnitude_D[n:n+trend_block_size] for n in range(0, len(magnitude_D), trend_block_size)]
+    subList_magND = [magnitude_ND[n:n+trend_block_size] for n in range(0, len(magnitude_ND), trend_block_size)]
+    for l in range(len(subList_magD)):
 
+        ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
+
+    axs[4].grid()
+    axs[4].set_ylim([-101,101])
+    axs[4].plot(ai_list)
+    ####################################################
+    
     
     ############# ANDAMENTO SMOOTH #############
     h_perc_list_smooth = []
@@ -171,7 +194,7 @@ for i in range (1,61):
     axs[4].set_ylim([-1,101])
     axs[4].plot(h_perc_list_smooth)
     #####################################   
-
+    '''
     
     plt.show()
     plt.close()
