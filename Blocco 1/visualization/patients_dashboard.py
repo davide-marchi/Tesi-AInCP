@@ -11,8 +11,8 @@ import matplotlib
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -126,20 +126,32 @@ for i in range (1,61):
         else:
             Y[k] = 0
 
-
-    date = []
     fig, axs = plt.subplots(5)
     fig.suptitle('Patient ' + str(i) + ' week trend')
+    '''
+    
+    
     for str_datetime in df['datetime']:
+        print("iterazione numero: ", iterazione)
         date.append(matplotlib.dates.date2num(datetime.strptime(str_datetime, '%Y-%m-%d %H:%M:%S')))
-
-    #axs[0].xaxis.set_minor_locator(matplotlib.dates.DayLocator())
-    #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%d'))
-    axs[0].xaxis.set_major_locator(matplotlib.dates.HourLocator())
+        iterazione+=1
+    '''
+    date= []
+    iterazione = 0
+    date = np.zeros(518400)
+    for index in range(1, df['datetime'].shape[0], int(df['datetime'].shape[0]/12)):
+        print("iterazione numero: ", iterazione)
+        date[index] = (matplotlib.dates.date2num(datetime.strptime(df['datetime'].iloc[index], '%Y-%m-%d %H:%M:%S')))
+        iterazione+=1
+    
+    #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
+    #axs[0].xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(12))
+    #axs[0].xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(n=6))
+    #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%H-%M'))
     axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H-%M'))
-    axs[0].tick_params(pad=10)
+    axs[0].tick_params(axis='x', pad=-0.5)
     axs[0].plot(date,magnitude_D)
-    axs[0].plot(date,magnitude_ND)
+    axs[0].plot(date, magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
     #axs[1].scatter(list(range(len(Y))), list([0]*len(Y)), c=Y, cmap='brg')
     trend_block_size = 36
