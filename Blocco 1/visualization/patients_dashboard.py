@@ -11,8 +11,8 @@ import matplotlib
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -130,8 +130,8 @@ for i in range (1,61):
     date = []
     fig, axs = plt.subplots(5)
     fig.suptitle('Patient ' + str(i) + ' week trend')
-    for str in df['datetime']:
-        date.append(matplotlib.dates.date2num(datetime.strptime(str, '%Y-%m-%d %H:%M:%S')))
+    for str_datetime in df['datetime']:
+        date.append(matplotlib.dates.date2num(datetime.strptime(str_datetime, '%Y-%m-%d %H:%M:%S')))
 
     #axs[0].xaxis.set_minor_locator(matplotlib.dates.DayLocator())
     #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%d'))
