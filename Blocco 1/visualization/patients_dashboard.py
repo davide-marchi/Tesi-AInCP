@@ -141,7 +141,7 @@ for i in range (1,61):
         else:
             Y[k] = 0
 
-    fig, axs = plt.subplots(6)
+    fig, axs = plt.subplots(7)
     fig.suptitle('Patient ' + str(i) + ' week trend')
     
     #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
@@ -152,7 +152,9 @@ for i in range (1,61):
     axs[0].plot(timestamps, magnitude_D)
     axs[0].plot(timestamps, magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
-    trend_block_size = 72
+
+    trend_block_size = 72           # Numero di finestre (da 600 secondi) raggruppate in un blocco
+    significativity_treshold = 25   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     ############# ANDAMENTO A BLOCCHI #############
     h_perc_list = []
@@ -160,14 +162,14 @@ for i in range (1,61):
     for l in subList:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
-        if (((n_hemi + n_healthy) / trend_block_size) * 100) < 25:
+        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_treshold:
             h_perc_list.append(np.nan)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
     #axs[2].fill_between(list(range(len(h_perc_list))), 0, h_perc_list, alpha=0.5)
     axs[2].grid()
-    #axs[2].set_xlim([0,11])     ############################
+    #axs[2].set_xlim([0,11])      ##########
     axs[2].set_ylim([-1,101])
     axs[2].plot(h_perc_list)
     h_perc_list.append(h_perc_list[-1])
@@ -196,11 +198,13 @@ for i in range (1,61):
     
     ############# ANDAMENTO SMOOTH #############
     h_perc_list_smooth = []
+    h_perc_list_smooth_significativity = []
     subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
     for l in subList_smooth:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
-        if (((n_hemi + n_healthy) / trend_block_size) * 100) < 25:
+        h_perc_list_smooth_significativity.append(((n_hemi + n_healthy) / trend_block_size) * 100)
+        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_treshold:
             h_perc_list_smooth.append(np.nan)
         else:
             h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
@@ -208,8 +212,20 @@ for i in range (1,61):
     axs[5].grid()
     axs[5].set_ylim([-1,101])
     axs[5].plot(h_perc_list_smooth)
+
+    axs[6].grid()
+    axs[6].set_ylim([-1,101])
+    axs[6].plot(h_perc_list_smooth_significativity)
+    axs[6].axhline(y = 25, color = 'r', linestyle = '-')
     #####################################   
     
+
+    ############# LINEAR REGRESSION (SIGNIFICANT MOMENTS) #############
+
+    lin_reg = jl.load('Blocco 1/visualization/regressor_' + model_name)
+
+    #####################################
+
     
     plt.show()
     plt.close()
