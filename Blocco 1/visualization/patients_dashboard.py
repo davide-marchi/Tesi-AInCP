@@ -11,8 +11,8 @@ import matplotlib
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -77,6 +77,12 @@ metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'],
 stats = pd.read_csv(model_folder + 'statistiche.csv')
 hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 
+if not os.path.exists('Blocco 1/visualization/regressor_' + model_name):
+    print('linear regressor not found')
+    exit(1)
+
+lin_reg = jl.load('Blocco 1/visualization/regressor_' + model_name)
+
 
 if not os.path.exists('Blocco 1/visualization/timestamps_list'):
     start = datetime.datetime(2023, 1, 1)
@@ -97,6 +103,7 @@ healthy_percentage = []
 
 for i in range (1,61):
 
+    aha = metadata['AHA'].iloc[i-1]
     cluster_hemiplegic_samples = 0 #malati
     cluster_healthy_samples = 0 #sani
     series = []
@@ -142,7 +149,7 @@ for i in range (1,61):
             Y[k] = 0
 
     fig, axs = plt.subplots(7)
-    fig.suptitle('Patient ' + str(i) + ' week trend')
+    fig.suptitle('Patient ' + str(i) + ' week trend, AHA: ' + str(aha))
     
     #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
     #axs[0].xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(12))
@@ -154,7 +161,7 @@ for i in range (1,61):
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
 
     trend_block_size = 72           # Numero di finestre (da 600 secondi) raggruppate in un blocco
-    significativity_treshold = 25   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+    significativity_treshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     ############# ANDAMENTO A BLOCCHI #############
     h_perc_list = []
@@ -209,23 +216,21 @@ for i in range (1,61):
         else:
             h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
+    predicted_h_perc = lin_reg.predict([[aha]])
+    print('hp predicted: ', predicted_h_perc, ' aha was: ', aha)
+    conf = 10
+    compare_hp_aha = [np.nan if predicted_h_perc - conf <= x <= predicted_h_perc + conf else x for x in h_perc_list_smooth]
+
     axs[5].grid()
     axs[5].set_ylim([-1,101])
-    axs[5].plot(h_perc_list_smooth)
+    axs[5].plot(h_perc_list_smooth, c ='green')
+    axs[5].plot(compare_hp_aha, c = 'red')
 
     axs[6].grid()
     axs[6].set_ylim([-1,101])
     axs[6].plot(h_perc_list_smooth_significativity)
-    axs[6].axhline(y = 25, color = 'r', linestyle = '-')
-    #####################################   
-    
-
-    ############# LINEAR REGRESSION (SIGNIFICANT MOMENTS) #############
-
-    lin_reg = jl.load('Blocco 1/visualization/regressor_' + model_name)
-
+    axs[6].axhline(y = significativity_treshold, color = 'r', linestyle = '-')
     #####################################
-
     
     plt.show()
     plt.close()
