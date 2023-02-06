@@ -11,8 +11,8 @@ import matplotlib
 
 
 ############
-#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -161,7 +161,7 @@ for i in range (1,61):
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
 
     trend_block_size = 72           # Numero di finestre (da 600 secondi) raggruppate in un blocco
-    significativity_treshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+    significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     ############# ANDAMENTO A BLOCCHI #############
     h_perc_list = []
@@ -169,7 +169,7 @@ for i in range (1,61):
     for l in subList:
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
-        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_treshold:
+        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_threshold:
             h_perc_list.append(np.nan)
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
@@ -211,7 +211,7 @@ for i in range (1,61):
         n_hemi = l.tolist().count(-1)
         n_healthy = l.tolist().count(1)
         h_perc_list_smooth_significativity.append(((n_hemi + n_healthy) / trend_block_size) * 100)
-        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_treshold:
+        if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_threshold:
             h_perc_list_smooth.append(np.nan)
         else:
             h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
@@ -229,7 +229,7 @@ for i in range (1,61):
     axs[6].grid()
     axs[6].set_ylim([-1,101])
     axs[6].plot(h_perc_list_smooth_significativity)
-    axs[6].axhline(y = significativity_treshold, color = 'r', linestyle = '-')
+    axs[6].axhline(y = significativity_threshold, color = 'r', linestyle = '-')
     #####################################
     
     plt.show()

@@ -52,6 +52,7 @@ def regression_and_correlation(path_to_csv,number_of_patients):
     plt.xlabel('healthy_percentage')
     plt.ylabel('AHA')
     plt.show()
+    plt.close()
 
 l_operation_type =      ['concat', 'difference','ai']   # ['concat','difference', 'ai']
 l_patients =            [60]                             # [34, 60]
