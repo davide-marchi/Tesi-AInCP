@@ -11,8 +11,8 @@ def regression_and_correlation(path_to_csv,number_of_patients):
     #df = pd.read_csv('Blocco 1/concat_version/week_predictions/KMEANS_K2_W600_kmeans++_dtw_dba/predictions_dataframe.csv', nrows=60)
     df = pd.read_csv(path_to_csv, nrows=number_of_patients)
 
-    X = df[['AHA']].values
-    y = df['healthy_percentage'].values
+    X = df[['healthy_percentage']].values
+    y = df['AHA'].values
 
 
     # Create the linear regression object
@@ -26,7 +26,7 @@ def regression_and_correlation(path_to_csv,number_of_patients):
 
     lin_reg.fit(X_train, y_train)
 
-    jl.dump(lin_reg, 'Blocco 1/visualization/regressor_AHA2HP_KMEANS_K2_W600_kmeans++_euclidean_mean')
+    jl.dump(lin_reg, 'Blocco 1/visualization/regressor_HP2AHA_KMEANS_K2_W600_kmeans++_euclidean_mean')
 
     #predictions = lin_reg.predict(X_test)
     #for i in range(len(predictions)):

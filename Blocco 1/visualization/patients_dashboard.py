@@ -11,8 +11,8 @@ import matplotlib
 
 
 ############
-folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
-#folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
+#folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
+folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 
 model_name = 'KMEANS_K2_W600_kmeans++_euclidean_mean'
 
@@ -77,11 +77,12 @@ metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'],
 stats = pd.read_csv(model_folder + 'statistiche.csv')
 hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 
-if not os.path.exists('Blocco 1/visualization/regressor_' + model_name):
-    print('linear regressor not found')
+if (not os.path.exists('Blocco 1/visualization/regressor_AHA2HP_' + model_name)) or (not os.path.exists('Blocco 1/visualization/regressor_HP2AHA_' + model_name)) :
+    print('a linear regressor was not found')
     exit(1)
 
-lin_reg = jl.load('Blocco 1/visualization/regressor_' + model_name)
+lin_reg_AHA2HP = jl.load('Blocco 1/visualization/regressor_AHA2HP_' + model_name)
+lin_reg_HP2AHA = jl.load('Blocco 1/visualization/regressor_HP2AHA_' + model_name)
 
 
 if not os.path.exists('Blocco 1/visualization/timestamps_list'):
@@ -174,18 +175,10 @@ for i in range (1,61):
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
-    #axs[2].fill_between(list(range(len(h_perc_list))), 0, h_perc_list, alpha=0.5)
     axs[2].grid()
-    #axs[2].set_xlim([0,11])      ##########
     axs[2].set_ylim([-1,101])
-    axs[2].plot(h_perc_list)
-    h_perc_list.append(h_perc_list[-1])
-    axs[3].grid()
-    axs[3].set_ylim([-1,101])
-    axs[3].plot(h_perc_list, drawstyle = 'steps-post')
+    axs[2].plot(h_perc_list, drawstyle = 'steps-post')
     #####################################################
-
-
     
     ###################### AI PLOT ###############################
     ai_list = []
@@ -197,13 +190,14 @@ for i in range (1,61):
         else:
             ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
 
-    axs[4].grid()
-    axs[4].set_ylim([-101,101])
-    axs[4].plot(ai_list)
+    axs[3].grid()
+    axs[3].set_ylim([-101,101])
+    axs[3].plot(ai_list)
     ####################################################
     
     
     ############# ANDAMENTO SMOOTH #############
+    aha_list_smooth = []
     h_perc_list_smooth = []
     h_perc_list_smooth_significativity = []
     subList_smooth = [Y[n:n+trend_block_size] for n in range(0, len(Y)-trend_block_size+1)]
@@ -213,23 +207,36 @@ for i in range (1,61):
         h_perc_list_smooth_significativity.append(((n_hemi + n_healthy) / trend_block_size) * 100)
         if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_threshold:
             h_perc_list_smooth.append(np.nan)
+            aha_list_smooth.append(np.nan)
+
         else:
             h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+            aha_list_smooth.append(lin_reg_HP2AHA.predict([[h_perc_list_smooth[-1]]]))
+        print("h_perc: ",h_perc_list_smooth[-1]," aha_pred: ",aha_list_smooth[-1], " diff: ",aha_list_smooth[-1]-h_perc_list_smooth[-1])
 
-    predicted_h_perc = lin_reg.predict([[aha]])
+    predicted_h_perc = lin_reg_AHA2HP.predict([[aha]])
     print('hp predicted: ', predicted_h_perc, ' aha was: ', aha)
     conf = 10
     compare_hp_aha = [np.nan if predicted_h_perc - conf <= x <= predicted_h_perc + conf else x for x in h_perc_list_smooth]
 
+    axs[4].grid()
+    axs[4].set_ylim([-1,101])
+    axs[4].plot(h_perc_list_smooth, c ='green')
+    axs[4].plot(compare_hp_aha, c = 'red')
+
     axs[5].grid()
     axs[5].set_ylim([-1,101])
-    axs[5].plot(h_perc_list_smooth, c ='green')
-    axs[5].plot(compare_hp_aha, c = 'red')
+    axs[5].plot(h_perc_list_smooth_significativity)
+    axs[5].axhline(y = significativity_threshold, color = 'r', linestyle = '-')
+    #####################################
 
-    axs[6].grid()
+    ########### PREDICTED AHA PLOT ###############
+    #new_list = [[i] for i in h_perc_list_smooth]
     axs[6].set_ylim([-1,101])
-    axs[6].plot(h_perc_list_smooth_significativity)
-    axs[6].axhline(y = significativity_threshold, color = 'r', linestyle = '-')
+    axs[6].plot(aha_list_smooth)
+    axs[6].axhline(y = aha, color = 'r', linestyle = '-')
+    #####################################
+    
     #####################################
     
     plt.show()
