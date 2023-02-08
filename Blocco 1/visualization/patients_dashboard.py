@@ -21,7 +21,13 @@ operation_type = 'concat'
 model_folder = 'Blocco 1/'+ operation_type +'_version/60_patients/KMeans/' + model_name + '/'
 ############
     
-
+def first_quartile_of_max(my_list):
+    sorted_list = sorted(my_list, reverse=True)
+    quartile_length = len(sorted_list) // 2
+    if quartile_length == 0:
+        return sorted_list[0]
+    first_quartile = sum(sorted_list[:quartile_length]) / quartile_length
+    return first_quartile
 
 def plot_daily_trend():
     ################################################### DAILY TREND
@@ -101,6 +107,8 @@ else:
 
 guessed = []
 healthy_percentage = []
+max_hp_list = []
+max_quart_hp_list= []
 
 for i in range (1,61):
 
@@ -112,7 +120,7 @@ for i in range (1,61):
 
     df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv')
     
-    print("Inizio fase chunking")
+    #print("Inizio fase chunking")
 
     magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
     magnitude_ND = np.sqrt(np.square(df['x_ND']) + np.square(df['y_ND']) + np.square(df['z_ND']))
@@ -130,14 +138,14 @@ for i in range (1,61):
                 to_discard.append(int(j/sample_size))
 
 
-    print("Inizio fase predizione")
+    #print("Inizio fase predizione")
     Y = model.predict(np.array(series))
 
     for index in to_discard:
         Y[index] = -1
 
 
-    print("Inizio fase incrementi e stampe")
+    #print("Inizio fase incrementi e stampe")
     for k in range(len(Y)):
         # Presupponendo che i pazienti emiplegici siano nel cluster 0
         if Y[k] == hemi_cluster:
@@ -161,7 +169,7 @@ for i in range (1,61):
     axs[0].plot(timestamps, magnitude_ND)
     axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
 
-    trend_block_size = 72           # Numero di finestre (da 600 secondi) raggruppate in un blocco
+    trend_block_size = 72            # Numero di finestre (da 600 secondi) raggruppate in un blocco
     significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     ############# ANDAMENTO A BLOCCHI #############
@@ -175,6 +183,7 @@ for i in range (1,61):
         else:
             h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
+    h_perc_list.append(h_perc_list[-1])
     axs[2].grid()
     axs[2].set_ylim([-1,101])
     axs[2].plot(h_perc_list, drawstyle = 'steps-post')
@@ -211,56 +220,76 @@ for i in range (1,61):
 
         else:
             h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
-            aha_list_smooth.append(lin_reg_HP2AHA.predict([[h_perc_list_smooth[-1]]]))
-        print("h_perc: ",h_perc_list_smooth[-1]," aha_pred: ",aha_list_smooth[-1], " diff: ",aha_list_smooth[-1]-h_perc_list_smooth[-1])
+            predicted_aha = (lin_reg_HP2AHA.predict([[h_perc_list_smooth[-1]]]))[0]
+            aha_list_smooth.append(predicted_aha if predicted_aha <= 100 else 100) 
+        #print("h_perc: ",h_perc_list_smooth[-1]," aha_pred: ",aha_list_smooth[-1], " diff: ",aha_list_smooth[-1]-h_perc_list_smooth[-1])
 
     predicted_h_perc = lin_reg_AHA2HP.predict([[aha]])
-    print('hp predicted: ', predicted_h_perc, ' aha was: ', aha)
     conf = 10
-    compare_hp_aha = [np.nan if predicted_h_perc - conf <= x <= predicted_h_perc + conf else x for x in h_perc_list_smooth]
+
+    filtered_list = list(filter(lambda x: not np.isnan(x), h_perc_list_smooth))
+
+    max_hp_list.append(max(filtered_list))
+    max_quart_hp_list.append(first_quartile_of_max(filtered_list))
 
     axs[4].grid()
     axs[4].set_ylim([-1,101])
+    axs[4].axhline(y = predicted_h_perc, color = 'b', linestyle = '--', linewidth= 1, label='predicted hp')
     axs[4].plot(h_perc_list_smooth, c ='green')
-    axs[4].plot(compare_hp_aha, c = 'red')
+    axs[4].plot([np.nan if predicted_h_perc - conf <= x <= predicted_h_perc + conf else x for x in h_perc_list_smooth], c = 'red')
+    axs[4].legend()
+
 
     axs[5].grid()
     axs[5].set_ylim([-1,101])
+    axs[5].axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='threshold')
     axs[5].plot(h_perc_list_smooth_significativity)
-    axs[5].axhline(y = significativity_threshold, color = 'r', linestyle = '-')
+    axs[5].legend()
     #####################################
 
     ########### PREDICTED AHA PLOT ###############
     #new_list = [[i] for i in h_perc_list_smooth]
+    axs[6].grid()
     axs[6].set_ylim([-1,101])
-    axs[6].plot(aha_list_smooth)
-    axs[6].axhline(y = aha, color = 'r', linestyle = '-')
-    #####################################
+    axs[6].axhline(y = aha, color = 'b', linestyle = '--', linewidth= 1, label='aha')
+    axs[6].plot(aha_list_smooth, c = 'green')
+    axs[6].plot([np.nan if aha - conf <= x <= aha + conf else x for x in aha_list_smooth], c ='red')
+    axs[6].legend()
     
     #####################################
     
-    plt.show()
-    plt.close()
-
-    #plot_daily_trend()
+    #####################################
+    
+    
+    
     
     
 
     is_hemiplegic = (metadata['hemi'].iloc[i-1] == 2)
-
+    hp_tot = np.nan
+    aha_from_hp_tot = np.nan
     guess =not((cluster_hemiplegic_samples > cluster_healthy_samples) ^ is_hemiplegic) if cluster_hemiplegic_samples!=cluster_healthy_samples else 'uncertain'
     print('Patient ', i, ' guessed: ', guess)
     guessed.append(guess)
 
-    if (cluster_healthy_samples == 0 and cluster_hemiplegic_samples == 0):
-        healthy_percentage.append(np.nan)
-    else:
-        healthy_percentage.append((cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100)
+    if (cluster_healthy_samples != 0 or cluster_hemiplegic_samples != 0):
+        hp_tot = (cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100
+        aha_from_hp_tot = (lin_reg_HP2AHA.predict([[hp_tot]]))[0] 
+        aha_from_hp_tot = 100 if aha_from_hp_tot > 100 else aha_from_hp_tot
+        
+
+    healthy_percentage.append(hp_tot)
+    print('AHA predicted from total HP: ', round(aha_from_hp_tot,2) , ' AHA was: ', aha, "\n----")
+
+    plt.show()
+    plt.close()
+
+    #plot_daily_trend()
 
 
 metadata['guessed'] = guessed
 metadata['healthy_percentage'] = healthy_percentage
-print(metadata)
+#print(metadata)
 
 guessed_hemiplegic_patients = len(metadata[(metadata['hemi']==2) & (metadata['guessed']==True)])
 guessed_healthy_patients = len(metadata[(metadata['hemi']==1) & (metadata['guessed']==True)])
@@ -281,3 +310,6 @@ metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='v
 metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_aha.png')
 #metadata.plot.scatter(x='AI_week', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_week_AHA.png')
 #metadata.plot.scatter(x='AI_aha', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_aha_AHA.png')
+
+print("\nCoefficiente di Pearson tra max e aha: ", (np.corrcoef(max_hp_list, metadata['AHA'].values))[0][1])
+print("\nCoefficiente di Pearson tra maxquart e aha: ", (np.corrcoef(max_quart_hp_list, metadata['AHA'].values))[0][1], '\n')
