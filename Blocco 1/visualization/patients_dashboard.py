@@ -70,6 +70,9 @@ healthy_percentage = []
 max_hp_list = []
 max_quart_hp_list = []
 
+trend_block_size = 72            # Numero di finestre (da 600 secondi) raggruppate in un blocco
+significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+
 for i in range (1,61):
 
     df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv')
@@ -144,10 +147,7 @@ for i in range (1,61):
     axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H:%M'))
     axs[0].plot(timestamps, magnitude_D)
     axs[0].plot(timestamps, magnitude_ND)
-    axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)
-
-    trend_block_size = 72            # Numero di finestre (da 600 secondi) raggruppate in un blocco
-    significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+    axs[1].scatter(list(range(len(Y))), Y, c=Y, cmap='brg', s=10)   
 
     #################### ANDAMENTO A BLOCCHI ####################
     h_perc_list = []
@@ -257,6 +257,7 @@ metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='vi
 #metadata.plot.scatter(x='AI_week', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_week_AHA.png')
 #metadata.plot.scatter(x='AI_aha', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_aha_AHA.png')
 
-print("Coefficiente di Pearson tra hp e aha:       ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
-print("Coefficiente di Pearson tra max e aha:      ", (np.corrcoef(max_hp_list, metadata['AHA'].values))[0][1])
-print("Coefficiente di Pearson tra maxquart e aha: ", (np.corrcoef(max_quart_hp_list, metadata['AHA'].values))[0][1])
+print('Modello usato per calcolare hp: ', model_name)
+print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
+print("Coefficiente di Pearson tra max hp e aha:      ", (np.corrcoef(max_hp_list, metadata['AHA'].values))[0][1])
+print("Coefficiente di Pearson tra maxquart hp e aha: ", (np.corrcoef(max_quart_hp_list, metadata['AHA'].values))[0][1])

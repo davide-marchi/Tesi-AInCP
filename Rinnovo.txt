@@ -1,0 +1,55 @@
+|| 
+|| Timeseries
+|| 
+|| Tagliamo e elaboriamo (elaborate magnitude)
+|| 
+|| Addestiamo modelli binari (sup unsup)
+|| 
+|| Calcoliamo hp (patrints_dashboard)
+|| 
+|| Calcoliamo correlazione con AHA | Percentuale guessed con 50% | Migliore percentuale e quanti ne indovina
+|| 
+|| Maggior correlazione vince (= Abbiamo il miglior modello per calcolare hp)
+|| 
+
+classe modello:
+    att1
+    att2
+    att...
+    ...
+
+file .json dove si si scrivono tutti gli oggetti modello
+file .json dove si scrivono i modelli che vogliamo analizzare
+
+
+main()
+
+    mostraPlot = True
+
+    legge tutti i modelli nel json di quelli che ci interessano
+    
+    per ogni modello:
+
+        calcola il nome
+
+        se non esiste:
+
+            lo allena sulle time series dei test AHA
+
+        altrimenti
+        
+            lo carica
+
+        se non lo abbiamo testato sui dati AHA:
+
+            lo testa sui dati AHA e produco file statistiche
+
+        se non lo abbiamo testato sui dati week:
+
+            per ogni paziente:
+            
+                se mostraPlot == True
+
+                    Mostra la dashboard
+
+            produco file statistiche
