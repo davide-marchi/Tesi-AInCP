@@ -22,6 +22,26 @@ file .json dove si si scrivono tutti gli oggetti modello
 file .json dove si scrivono i modelli che vogliamo analizzare
 
 
+
+
+|
+|   kmeans_1
+|   600 secs
+|   concat
+|   60 pats
+|   <class 'sktime.classification.interval_based._tsf.TimeSeriesForestClassifier'>
+|   {'average_params': None, 'averaging_method': 'mean', 'distance_params': None, 'init_algorithm': 'random', 'max_iter': 300, 'metric': 'dtw', 'n_clusters': 8, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False}
+|
+|
+|   kmeans_2
+|   600 secs
+|   concat
+|   60 pats
+|   <class 'sktime.classification.interval_based._tsf.TimeSeriesForestClassifier'>
+|   {'average_params': None, 'averaging_method': 'dba', 'distance_params': None, 'init_algorithm': 'random', 'max_iter': 300, 'metric': 'dtw', 'n_clusters': 8, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False}
+
+
+
 main()
 
     mostraPlot = True
@@ -41,6 +61,10 @@ main()
             lo carica
 
         se non lo abbiamo testato sui dati AHA:
+
+            # se è supervised
+            #
+            #     split e statistiche sui dati splitatti e poi traino nuovamente su tutti i dati
 
             lo testa sui dati AHA e produco file statistiche
 

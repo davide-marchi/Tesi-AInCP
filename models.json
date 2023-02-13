@@ -2,7 +2,7 @@
     {
         "name": "KMEANS_K2_EUCLIDEAN",
         "supervised": "False",
-        "n_clusters": "3"
+        "n_clusters": 3
     },
     {
         "name": "DL_SUPERVISED_SIGMOID",
