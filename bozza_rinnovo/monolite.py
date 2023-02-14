@@ -9,7 +9,7 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 #folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 models_data = [
-    ("KMeans",600, "unsupervised", 60, "concat" , {'average_params': None, 'averaging_method': 'mean', 'distance_params': None, 'init_algorithm': 'kmeans++', 'max_iter': 300, 'metric': 'euclidean', 'n_clusters': 2, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False} )
+    ("KMeans", 600, "unsupervised", 60, "concat" , {'average_params': None, 'averaging_method': 'mean', 'distance_params': None, 'init_algorithm': 'kmeans++', 'max_iter': 300, 'metric': 'euclidean', 'n_clusters': 2, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False} )
 ]
 
 

@@ -11,7 +11,7 @@ def save_plots(metadata, folder_name):
     metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_week.png')
     metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_aha.png')
     # Prompt the user to enter "yes" or "no"
-    answer = input("Do you want to see the plot of the correlations? (yes/no): ")
+    answer = input("Do you want to see the plot of the correlations? (yes/no): \n")
 # If the user enters "yes", show the plot
     if answer.lower() == "no":
         plt.close()

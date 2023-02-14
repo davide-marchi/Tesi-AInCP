@@ -22,7 +22,7 @@ def first_quartile_of_max(my_list):
 def patients_dashboard(folder, model_name, operation_type, model_folder):
 
     plot_show = False
-    answer = input("Do you want to see the dashboard for each patient? (yes/no): ")
+    answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
     # If the user enters "yes", show the plot
     if answer.lower() == "yes":
         plot_show = True
