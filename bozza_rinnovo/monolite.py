@@ -9,18 +9,19 @@ folder = 'C:/Users/giord/Downloads/only AC data/only AC/'
 #folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 
 models_data = [
-    ("KMeans", 600, "unsupervised", 60, "concat" , {'average_params': None, 'averaging_method': 'mean', 'distance_params': None, 'init_algorithm': 'kmeans++', 'max_iter': 300, 'metric': 'euclidean', 'n_clusters': 2, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False} )
+    ("KMeans", 600, "unsupervised", 60, "concat", 'sktime.clustering.k_means.TimeSeriesKMeans', {'average_params': None, 'averaging_method': 'mean', 'distance_params': None, 'init_algorithm': 'kmeans++', 'max_iter': 300, 'metric': 'euclidean', 'n_clusters': 2, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False} )
 ]
 
 
 models = []
-for name,window_size, type, patients, method, params in models_data:
+for name,window_size, type, patients, method,class_type, params in models_data:
     model = {
         "name": name,
         "window_size": window_size,
         "type": type,
         "patients": patients,
         "method": method,
+        "class_type": class_type,
         "params": params
     }
     models.append(model)
@@ -63,11 +64,11 @@ for model in models:
     #altrimenti dovremmo metterli tutti nel nome, per renderlo unico
 
     model_name = model["name"].upper()+'_K'+str(2)+'_W'+str(model["window_size"])+'_'+model["params"]['init_algorithm']+'_'+model["params"]['metric']+'_'+model["params"]['averaging_method']
-    #print(model_name)
+    print(model_name)
     model_folder = 'Blocco 1/'+ model["method"] +'_version/'+str(model["patients"])+'_patients/'+model["name"]+'/' + model_name + '/'
     if not(os.path.exists(model_folder + "trained_model")):
         print("modello non allenato, avvio del training:\n")
-        train_clustering_model(folder, False, model["method"], model["patients"], model["name"], model["window_size"], model["params"])
+        train_clustering_model(folder, False, model, model_name)
 
 
     print("testing phase:\n")

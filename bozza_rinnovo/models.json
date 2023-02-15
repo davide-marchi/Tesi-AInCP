@@ -5,6 +5,7 @@
         "type": "unsupervised",
         "patients": 60,
         "method": "concat",
+        "class_type": "sktime.clustering.k_means.TimeSeriesKMeans",
         "params": {
             "average_params": null,
             "averaging_method": "mean",

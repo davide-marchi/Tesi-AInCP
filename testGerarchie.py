@@ -1,5 +1,6 @@
 from sktime.clustering.k_means import TimeSeriesKMeans
 from sktime.clustering.k_medoids import TimeSeriesKMedoids
+import importlib
 
 
 model = TimeSeriesKMeans()
@@ -58,11 +59,24 @@ print(clf_loaded_good.predict(X_test))
 print(estimator_loaded_good.predict(X_test))
 
 
-print('\n--------------\n')
-#estimator_from_txt = (type(clf))()
-#print(estimator_from_txt.get_params())
+class_string = "sktime.classification.interval_based._tsf.TimeSeriesForestClassifier"
 
-estimator_from_txt = TimeSeriesForestClassifier()
+# Split the string into the module and class names
+module_name, class_name = class_string.rsplit(".", 1)
+
+# Import the module
+module = importlib.import_module(module_name)
+
+# Get the class object from the module
+class_obj = getattr(module, class_name)
+
+# Use the instance as needed
+
+print('\n--------------\n')
+estimator_from_txt = class_obj()
+print(estimator_from_txt.get_params())
+print("\t",type(type(clf)))
+#estimator_from_txt = TimeSeriesForestClassifier()
 print(clf.get_params())
 #print(clf.get_fitted_params())
 print(clf.get_tags())
