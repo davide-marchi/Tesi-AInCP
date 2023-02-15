@@ -79,4 +79,4 @@ def train_clustering_model(folder, plot_clusters, model, model_name):
     if plot_clusters:
         plot_cluster_algorithm(modello, X, modello.n_clusters)
 
-    #print("TRAINING COMPLETED (Model " + model_name + " ready)")
+    print("TRAINING COMPLETED (Model " + model_name + " ready)")
