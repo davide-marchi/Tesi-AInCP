@@ -1,12 +1,26 @@
 [
     {
-        "name": "KMEANS_K2_EUCLIDEAN",
-        "supervised": "False",
-        "n_clusters": 3
+        "name": "KMEDOIDS_W300_dtw",
+        "type": "KMEDOIDS",
+        "params": {
+            "avg": "None",
+            "algo": "kmedoids"
+        }
     },
     {
-        "name": "DL_SUPERVISED_SIGMOID",
-        "supervised": "True",
-        "target": "EMI"
+        "name": "DEEPCONV_W300_euclidean",
+        "type": "Deep Learning",
+        "params": {
+            "deep": "True",
+            "algo": "sigmoid"
+        }
+    },
+    {
+        "name": "KMEANS_W300_euclidean",
+        "type": "KMeans",
+        "params": {
+            "avg": "euclidean",
+            "algo": "K-Means"
+        }
     }
 ]
