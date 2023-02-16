@@ -1,6 +1,5 @@
 [
     {
-        "name": "goat",
         "window_size": 600, 
         "patients": 60,
         "method": "concat",
