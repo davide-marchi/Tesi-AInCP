@@ -86,3 +86,12 @@ estimator_from_txt.set_params(**(clf.get_params()))  # LITERALLY INSANE
 print(estimator_from_txt.get_params())
 print(estimator_from_txt.get_tags())
 print(type(estimator_from_txt))
+
+
+
+# Non funziona kek
+# tsf_class  = eval("<class 'sktime.classification.interval_based._tsf.TimeSeriesForestClassifier'>")
+# extreme_try = tsf_class()
+# print('\n\n', extreme_try.get_params())
+# print(extreme_try.get_tags())
+# print(type(extreme_try))
