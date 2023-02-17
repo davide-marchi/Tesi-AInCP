@@ -67,7 +67,7 @@ def patients_dashboard(folder, model_name, operation_type, model_folder):
     max_hp_list = []
     max_quart_hp_list = []
 
-    trend_block_size = 72            # Numero di finestre (da 600 secondi) raggruppate in un blocco
+    trend_block_size = 36            # Numero di finestre (da 600 secondi) raggruppate in un blocco
     significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
     for i in range (1,61):
@@ -196,7 +196,7 @@ def patients_dashboard(folder, model_name, operation_type, model_folder):
                 aha_list_smooth.append(predicted_aha if predicted_aha <= 100 else 100) 
             #print("h_perc: ",h_perc_list_smooth[-1]," aha_pred: ",aha_list_smooth[-1], " diff: ",aha_list_smooth[-1]-h_perc_list_smooth[-1])
 
-        conf = 10
+        conf = 5
 
         filtered_list = list(filter(lambda x: not np.isnan(x), h_perc_list_smooth))
 

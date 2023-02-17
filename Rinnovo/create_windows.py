@@ -3,18 +3,15 @@ import math
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
 
-def create_windows(WINDOW_SIZE, folder, operation_type, patients):
+def create_windows(folder, WINDOW_SIZE , operation_type, patients):
     series = []
     y_AHA = []
     y_MACS =[]
-    lost = 0
-    total = 0
-    taken = 0
+    y = []
     metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
     for j in range (1,patients+1):
         df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
-        total += df.shape[0]
 
         #print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
 
@@ -27,7 +24,6 @@ def create_windows(WINDOW_SIZE, folder, operation_type, patients):
         scart = (df.shape[0] % WINDOW_SIZE)/2
         
         df_cut = df.iloc[math.ceil(scart):df.shape[0]-math.floor(scart)]
-        lost += df.shape[0]-df_cut.shape[0]
 
 
         # Calculating magnitude
@@ -39,6 +35,6 @@ def create_windows(WINDOW_SIZE, folder, operation_type, patients):
             series.append(elaborate_magnitude(operation_type, chunk_D, chunk_ND))
             y_AHA.append(metadata['AHA'].iloc[j-1])
             y_MACS.append(metadata['MACS'].iloc[j-1])
-            taken += WINDOW_SIZE
+            y.append(metadata['hemi'].iloc[j-1]-1)
     
-    return series, y_AHA, y_MACS, total, taken, lost
+    return series, y_AHA, y_MACS, y
