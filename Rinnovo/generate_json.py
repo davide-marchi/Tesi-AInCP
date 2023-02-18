@@ -50,3 +50,83 @@ models_json = json.dumps(models, indent=4)
 
 with open("input_models.json", "w") as f:
     f.write(models_json)
+
+
+
+'''
+preparazione per gridsearch:
+
+    -togliere l'opzione 60-34 pazienti ? 
+
+    -ha senso mettere tutti i parametri nel json o mettiamo solo quelli che ci interessano ?
+
+    -ha senso togliere il json e fare due for nel main ?
+
+
+
+    PARTE COMUNE usare generate_json.py che invece che params ha un dizionario di liste con tutte le permutazioni tipo:
+    "params": {
+            "average_params": [null],
+            "averaging_method": ["mean", "dba"],
+            "distance_params": [null],
+            "init_algorithm": ["kmeans++", "forgy", "random"],
+            "max_iter": [300],
+            "metric": ["euclidean", "dtw"],
+            "n_clusters": [2],
+            "n_init": [10],
+            "random_state": [null],
+            "tol": [1e-06],
+            "verbose": [false]
+        }
+
+
+
+    supervised:
+        GridSearchCV(knn, param_grid, cv=KFold(n_splits=5)) dove param_grid è un dizionario di liste che contengono tutte le permutazioni per quella chiave
+        avremmo quindi 9 modelli per ogni classificatore , ognuno il migliore del suo tipo
+        
+    unsupervised:
+        fare una gridsearch simile a sopra però specificare uno scorer personalizzato che calcola la purity in base alla predizione hemi/nothemi (tipo percentuale di quelli azzeccati)
+        avremmo quindi 9 modelli per ogni clusterer , ognuno il migliore del suo tipo
+
+
+    esempio gridsearch supervised :
+        from sklearn.model_selection import GridSearchCV
+        from sktime.classification.distance_based import KNeighborsTimeSeriesClassifier
+
+        knn = KNeighborsTimeSeriesClassifier()
+        param_grid = {"n_neighbors": [1, 5], "distance": ["euclidean", "dtw"]}
+        parameter_tuning_method = GridSearchCV(knn, param_grid, cv=KFold(n_splits=4))
+
+        parameter_tuning_method.fit(arrow_train_X, arrow_train_y)
+        y_pred = parameter_tuning_method.predict(arrow_test_X)
+
+        accuracy_score(arrow_test_y, y_pred)
+
+    esempio gridsearch unsupervised :
+        from sklearn.metrics import r2_score
+
+        def scorer_f(estimator, X_train,Y_train):
+            y_pred=estimator.predict(Xtrain)
+            return r2_score(Y_train, y_pred)
+        
+        clf = IForest(random_state=47, behaviour='new',
+              n_jobs=-1)
+
+        param_grid = {'n_estimators': [20,40,70,100], 
+                    'max_samples': [10,20,40,60], 
+                    'contamination': [0.1, 0.01, 0.001], 
+                    'max_features': [5,15,30], 
+                    'bootstrap': [True, False]}
+
+        grid_estimator = model_selection.GridSearchCV(clf, 
+                                                    param_grid,
+                                                    scoring=scorer_f,
+                                                    cv=5,
+                                                    n_jobs=-1,
+                                                    return_train_score=True,
+                                                    error_score='raise',
+                                                    verbose=3)
+
+        grid_estimator.fit(X_train, y_train)
+'''

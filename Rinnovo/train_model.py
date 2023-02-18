@@ -24,13 +24,15 @@ def train_model(data_folder, specs, model_folder):
 
     if issubclass(type(model), BaseClassifier):
         print(type(model)," is a CLASSIFIER !")
+        #5fold
+        y_pred = model.fit(X, y)
     else:
         print(type(model)," is a CLUSTERER !")
-        #model.fit_predict(X)
+        y_pred = model.fit_predict(X)
 
-    #y_pred = model.fit(X, y)
     os.makedirs(model_folder, exist_ok = True)
     model.save(model_folder + "trained_model")
+    print('model saved : ', specs['class_type'])
 
     #save_model_stats(X, y_AHA, y_MACS, y_pred, model, specs["params"]['n_clusters'], model_folder)
 
