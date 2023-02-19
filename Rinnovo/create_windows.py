@@ -3,7 +3,7 @@ import math
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
 
-def create_windows(folder, WINDOW_SIZE , operation_type, patients):
+def create_windows(folder, patients, operation_type, WINDOW_SIZE):
     series = []
     y_AHA = []
     y_MACS =[]

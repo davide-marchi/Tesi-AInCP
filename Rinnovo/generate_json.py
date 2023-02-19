@@ -56,11 +56,11 @@ with open("input_models.json", "w") as f:
 '''
 preparazione per gridsearch:
 
-    -togliere l'opzione 60-34 pazienti ? 
+    -togliere l'opzione 60-34 pazienti ? (No)
 
-    -ha senso mettere tutti i parametri nel json o mettiamo solo quelli che ci interessano ?
+    -ha senso mettere tutti i parametri nel json o mettiamo solo quelli che ci interessano ? (Solo quelli che ci interessano)
 
-    -ha senso togliere il json e fare due for nel main ?
+    -ha senso togliere il json e fare due for nel main ? (Sì, con itertools)
 
 
 
