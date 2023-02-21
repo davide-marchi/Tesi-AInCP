@@ -1,16 +1,17 @@
 import pandas as pd
 import math
+import copy
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
 
-def create_windows(folder, patients, operation_type, WINDOW_SIZE):
+def create_windows(folder, operation_type, WINDOW_SIZE):
     series = []
     y_AHA = []
     y_MACS =[]
     y = []
     metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
 
-    for j in range (1,patients+1):
+    for j in range (1, metadata.shape[0]+1):
         df = pd.read_csv(folder + 'data/' + str(j) + '_AHA_1sec.csv')
 
         #print('Paziente ' + str(j) + ' -> df.shape[0] = ' + str(df.shape[0]))
@@ -37,4 +38,9 @@ def create_windows(folder, patients, operation_type, WINDOW_SIZE):
             y_MACS.append(metadata['MACS'].iloc[j-1])
             y.append(metadata['hemi'].iloc[j-1]-1)
     
-    return series, y_AHA, y_MACS, y
+    return np.array(series), y_AHA, y_MACS, np.array(y)
+
+    #return np.array(copy.deepcopy(series)), y_AHA, y_MACS, np.array(copy.deepcopy(y))
+    # create a list of dictionaries
+    #dicts = [{"column": lst} for lst in series]
+    #return pd.DataFrame(dicts).copy(), y_AHA, y_MACS, np.array(y)

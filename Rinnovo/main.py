@@ -37,23 +37,22 @@ shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
 shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa'] }
 shapedtw = (shapedtw_type, shapedtw_params)
 
-l_patients =            [34, 60]                                    # [34, 60]
 l_method =              ['concat','difference', 'ai']               # ['concat','difference', 'ai']
 l_window_size =         [300,600,900]                               # [300, 600, 900]
-l_model_specs =         [kmeans, shapedtw]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_model_specs =         [shapedtw]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
-for patients, method, window_size, model_specs in itertools.product(l_patients, l_method, l_window_size, l_model_specs):
+for method, window_size, model_specs in itertools.product(l_method, l_window_size, l_model_specs):
 
-    print('patients ', patients, '\t\tmethod ', method, '\t\twindow_size ', window_size, '\t\tmodel_specs ', model_specs)
+    print('method ', method, '\t\twindow_size ', window_size, '\t\tmodel_specs ', model_specs)
 
     model_type, model_params = model_specs
 
-    model_folder = "Trained_models/" + str(patients) + "_patients/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "model_" + hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10] + "/"
+    model_folder = "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "model_" + hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10] + "/"
 
     if not(os.path.exists(model_folder + "model.zip")):
 
         #print("Model not found -> Training started\n")
-        train_best_model(data_folder, model_folder, model_type, model_params, patients, method, window_size)
+        train_best_model(data_folder, model_folder, model_type, model_params, method, window_size)
 
     #model = BaseEstimator().load_from_path(model_folder + 'trained_model.zip')
 
