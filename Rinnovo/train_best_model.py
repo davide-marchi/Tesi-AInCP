@@ -28,15 +28,26 @@ def train_best_model(data_folder, model_folder, model_type, model_params, patien
         print(type(model)," is a CLASSIFIER !")
         
         param_grid = model_params
-        parameter_tuning_method = GridSearchCV(model, param_grid, cv=KFold(n_splits=5))
+        parameter_tuning_method = GridSearchCV(model, param_grid, cv=KFold(n_splits=5), return_train_score=True, verbose=3)
         # f1 score consigliato da Sirbu?
 
         parameter_tuning_method.fit(X, y)
-        y_pred = parameter_tuning_method.predict(X)
+
+        #print(parameter_tuning_method.best_score_)
+        #print(parameter_tuning_method.cv_results_)
+
+        #y_pred = parameter_tuning_method.predict(X)
 
     else:
         print(type(model)," is a CLUSTERER !")
-        y_pred = model.fit_predict(X)
+        #y_pred = model.fit_predict(X)
+
+        param_grid = model_params
+        parameter_tuning_method = GridSearchCV(model, param_grid, cv=KFold(n_splits=5), return_train_score=True, verbose=3)
+        # f1 score consigliato da Sirbu?
+
+        parameter_tuning_method.fit(X, y)
+
 
     os.makedirs(model_folder, exist_ok = True)
     model.save(model_folder + "model")

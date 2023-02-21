@@ -17,9 +17,9 @@ else:
 # Cambio la directory di esecuzione in quella dove si trova questo file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-#kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-#kmeans_params =  {'averaging_method': ['mean', 'dba'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': 2}
-#kmeans = (kmeans_type, kmeans_params)
+kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
+kmeans_params =  {'averaging_method': ['mean', 'dba'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
+kmeans = (kmeans_type, kmeans_params)
 
 #kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
 #kmedoids_params = {'distance_params': None, 'init_algorithm': 'random', 'max_iter': 300, 'metric': 'dtw', 'n_clusters': 8, 'n_init': 10, 'random_state': None, 'tol': 1e-06, 'verbose': False}
@@ -40,7 +40,7 @@ shapedtw = (shapedtw_type, shapedtw_params)
 l_patients =            [34, 60]                                    # [34, 60]
 l_method =              ['concat','difference', 'ai']               # ['concat','difference', 'ai']
 l_window_size =         [300,600,900]                               # [300, 600, 900]
-l_model_specs =         [shapedtw]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_model_specs =         [kmeans, shapedtw]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 for patients, method, window_size, model_specs in itertools.product(l_patients, l_method, l_window_size, l_model_specs):
 
