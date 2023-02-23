@@ -1,24 +1,23 @@
 import os
-import numpy as np
-import joblib as jl
-from create_windows import create_windows
-from save_model_stats import save_model_stats
+import json
+import importlib
 import pandas as pd
-
-from sklearn.metrics import f1_score
 from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sktime.classification.base import BaseClassifier
+from sklearn.metrics import f1_score
+from create_windows import create_windows
 
-import importlib
 
-def scorer_f(estimator, X_train,Y_train):
-    y_pred=estimator.predict(X_train)
+def scorer_f(estimator, X_train, Y_train):
+    y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):
         return f1_score(Y_train, y_pred)
     else:
         inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
         return max(f1_score(Y_train, y_pred),f1_score(Y_train, inverted_y_pred))
+
 
 def train_best_model(data_folder, model_folder, model_type, model_params, method, window_size):
 
@@ -26,24 +25,20 @@ def train_best_model(data_folder, model_folder, model_type, model_params, method
     module_name, class_name = model_type.rsplit(".", 1)
     model = getattr(importlib.import_module(module_name), class_name)()
 
-    X, y_AHA, y_MACS, y = create_windows(data_folder, method, window_size)
-
-        
+    X, _, _, y = create_windows(data_folder, method, window_size)
+ 
     param_grid = model_params
     #                                                             dobbiamo fixare il seed?
-    parameter_tuning_method = GridSearchCV(model, param_grid, cv=KFold(n_splits=5, shuffle=True), return_train_score=True, verbose=3, scoring=scorer_f)
+    parameter_tuning_method = GridSearchCV(model, param_grid, cv=StratifiedKFold(n_splits=5, shuffle=True), return_train_score=True, verbose=3, scoring=scorer_f)
     parameter_tuning_method.fit(X, y)
 
     model = parameter_tuning_method.best_estimator_
 
-    y_pred = model.predict(X)
-
-    os.makedirs(model_folder, exist_ok = True)
-    pd.DataFrame(parameter_tuning_method.cv_results_).to_csv(model_folder + "cv_results.csv")
+    stats_folder = model_folder + 'training_stats/'
+    os.makedirs(stats_folder, exist_ok = True)
     model.save(model_folder + "model")
-
     print('model saved : ', model_type)
 
-    save_model_stats(X, y_AHA, y_MACS, y_pred, model, model_folder)
-
-    #print("TRAINING COMPLETED (Model ready)")
+    pd.DataFrame(parameter_tuning_method.cv_results_).to_csv(stats_folder + "cv_results.csv")
+    with open(stats_folder + 'params.json', 'w') as f:
+        f.write(json.dumps(parameter_tuning_method.best_params_, indent=4))

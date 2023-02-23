@@ -1,0 +1,6 @@
+{
+    "averaging_method": "mean",
+    "init_algorithm": "random",
+    "metric": "euclidean",
+    "n_clusters": 2
+}

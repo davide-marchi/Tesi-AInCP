@@ -4,6 +4,7 @@ import hashlib
 import itertools
 from sktime.base import BaseEstimator
 from train_best_model import train_best_model
+from save_AHA_stats import save_AHA_stats
 from patients_dashboard import patients_dashboard
 
 if os.getlogin() == 'david':
@@ -17,7 +18,7 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy', 'random'], 'metric': ['euclidean'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['forgy', 'kmeans++', 'random'], 'metric': ['euclidean'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
@@ -55,11 +56,19 @@ for method, window_size, model_specs in itertools.product(l_method, l_window_siz
 
     model = BaseEstimator().load_from_path(model_folder + 'model.zip')
 
-    #print("Visualizing patients dashboard:\n")
-    #patients_dashboard(data_folder, model_name, model["method"], model_folder)
+    if not(os.path.exists(model_folder + "AHA_stats")):
+        print("Inizio a fare statistiche su sessioni AHA")
+        save_AHA_stats(model, model_folder + 'AHA_stats/', data_folder, method, window_size)
+        #save_AHA_stats(X, y_AHA, y_MACS, y_pred, model, stats_folder)
+    
+    if not(os.path.exists(model_folder + "week_stats")):
+        print("Inizio a fare statistiche su dati week")
+        #print("Visualizing patients dashboard:\n")
+        #patients_dashboard(data_folder, model_name, model["method"], model_folder)
 
     '''
     1. va bene la funzione di scoring?
     2. parlare della frammentazione
     3. test su AHA con cross validation
+    4. KFolf oppure stratifiedKFolde?
     '''
