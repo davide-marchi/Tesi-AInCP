@@ -5,7 +5,7 @@ import itertools
 from sktime.base import BaseEstimator
 from train_best_model import train_best_model
 from save_AHA_stats import save_AHA_stats
-from patients_dashboard import patients_dashboard
+from save_week_stats import save_week_stats
 
 if os.getlogin() == 'david':
     data_folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
@@ -64,11 +64,13 @@ for method, window_size, model_specs in itertools.product(l_method, l_window_siz
     if not(os.path.exists(model_folder + "week_stats")):
         print("Inizio a fare statistiche su dati week")
         #print("Visualizing patients dashboard:\n")
-        #patients_dashboard(data_folder, model_name, model["method"], model_folder)
+        #save_week_stats(data_folder, model_name, model["method"], model_folder)
+        save_week_stats(model, model_folder + 'week_stats/', data_folder, method, window_size)
+
 
     '''
     1. va bene la funzione di scoring?
     2. parlare della frammentazione
     3. test su AHA con cross validation
-    4. KFolf oppure stratifiedKFolde?
+    4. KFold oppure stratifiedKFold?
     '''

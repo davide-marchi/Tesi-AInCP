@@ -19,7 +19,8 @@ def first_quartile_of_max(my_list):
     first_quartile = sum(sorted_list[:quartile_length]) / quartile_length
     return first_quartile
 
-def patients_dashboard(folder, model_name, operation_type, model_folder):
+#def save_week_stats(data_folder, model_name, operation_type, model_folder):
+def save_week_stats(model, model_folder, data_folder, operation_type, sample_size):
 
     plot_show = False
     answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
@@ -27,23 +28,16 @@ def patients_dashboard(folder, model_name, operation_type, model_folder):
     if answer.lower() == "yes":
         plot_show = True
 
-    # Lettura della dimensione della finestra, ricerca del modello e caricamento
-    match = re.search(r"_W(\d+)", model_name)
-
-    if not(match) or not(os.path.exists(model_folder + "trained_model")):
-        print("Model not found or invalid sample size")
-        exit(1)
-
-    sample_size = int(match.group(1))
-    model = jl.load(model_folder + "trained_model")
+    '''
     if (not os.path.exists('Blocco 1/visualization/regressor_AHA2HP_' + model_name)) or (not os.path.exists('Blocco 1/visualization/regressor_HP2AHA_' + model_name)) :
         print('A linear regressor was not found')
         exit(1)
 
     lin_reg_AHA2HP = jl.load('Blocco 1/visualization/regressor_AHA2HP_' + model_name)
     lin_reg_HP2AHA = jl.load('Blocco 1/visualization/regressor_HP2AHA_' + model_name)
+    '''
 
-    if not os.path.exists('Blocco 1/visualization/timestamps_list'):
+    if not os.path.exists('Rinnovo/visualization/timestamps_list'):
         start = datetime.datetime(2023, 1, 1)
         end = datetime.datetime(2023, 1, 7)
         step = datetime.timedelta(seconds=1)
@@ -56,7 +50,7 @@ def patients_dashboard(folder, model_name, operation_type, model_folder):
     else:
         timestamps = jl.load('Blocco 1/visualization/timestamps_list')
 
-    metadata = pd.read_excel(folder + 'metadata2022_04.xlsx')
+    metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
     stats = pd.read_csv(model_folder + 'statistiche.csv')
@@ -72,7 +66,7 @@ def patients_dashboard(folder, model_name, operation_type, model_folder):
 
     for i in range (1,61):
 
-        df = pd.read_csv(folder + 'data/' + str(i) + '_week_1sec.csv')
+        df = pd.read_csv(data_folder + 'data/' + str(i) + '_week_1sec.csv')
         magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
         magnitude_ND = np.sqrt(np.square(df['x_ND']) + np.square(df['y_ND']) + np.square(df['z_ND']))
 
