@@ -1,6 +1,0 @@
-{
-    "averaging_method": "mean",
-    "init_algorithm": "forgy",
-    "metric": "euclidean",
-    "n_clusters": 2
-}

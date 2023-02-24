@@ -18,7 +18,7 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['forgy', 'kmeans++', 'random'], 'metric': ['euclidean'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++'], 'metric': ['euclidean'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
@@ -37,8 +37,8 @@ shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
 shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa'] }
 shapedtw = (shapedtw_type, shapedtw_params)
 
-l_method =              ['concat','difference', 'ai']               # ['concat','difference', 'ai']
-l_window_size =         [300,600,900]                               # [300, 600, 900]
+l_method =              ['concat']               # ['concat','difference', 'ai']
+l_window_size =         [600]                               # [300, 600, 900]
 l_model_specs =         [kmeans]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 for method, window_size, model_specs in itertools.product(l_method, l_window_size, l_model_specs):
@@ -65,7 +65,7 @@ for method, window_size, model_specs in itertools.product(l_method, l_window_siz
         print("Inizio a fare statistiche su dati week")
         #print("Visualizing patients dashboard:\n")
         #save_week_stats(data_folder, model_name, model["method"], model_folder)
-        save_week_stats(model, model_folder + 'week_stats/', data_folder, method, window_size)
+        save_week_stats(model, model_folder, data_folder, method, window_size)
 
 
     '''

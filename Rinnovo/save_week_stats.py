@@ -22,22 +22,28 @@ def first_quartile_of_max(my_list):
 #def save_week_stats(data_folder, model_name, operation_type, model_folder):
 def save_week_stats(model, model_folder, data_folder, operation_type, sample_size):
 
+    stats_folder = model_folder + 'week_stats/'
+    os.makedirs(stats_folder, exist_ok=True)
+
     plot_show = False
     answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
     # If the user enters "yes", show the plot
     if answer.lower() == "yes":
         plot_show = True
 
-    '''
-    if (not os.path.exists('Blocco 1/visualization/regressor_AHA2HP_' + model_name)) or (not os.path.exists('Blocco 1/visualization/regressor_HP2AHA_' + model_name)) :
+    temporary_regressor_name_1 = 'regressor_AHA2HP_KMEANS_K2_W600_kmeans++_euclidean_mean'
+    temporary_regressor_name_2 = 'regressor_HP2AHA_KMEANS_K2_W600_kmeans++_euclidean_mean'
+
+    
+    if (not os.path.exists(model_folder + temporary_regressor_name_1)) or (not os.path.exists(model_folder + temporary_regressor_name_2)) :
         print('A linear regressor was not found')
         exit(1)
 
-    lin_reg_AHA2HP = jl.load('Blocco 1/visualization/regressor_AHA2HP_' + model_name)
-    lin_reg_HP2AHA = jl.load('Blocco 1/visualization/regressor_HP2AHA_' + model_name)
-    '''
+    lin_reg_AHA2HP = jl.load(model_folder + temporary_regressor_name_1)
+    lin_reg_HP2AHA = jl.load(model_folder + temporary_regressor_name_2)
+    
 
-    if not os.path.exists('Rinnovo/visualization/timestamps_list'):
+    if not os.path.exists('timestamps_list'):
         start = datetime.datetime(2023, 1, 1)
         end = datetime.datetime(2023, 1, 7)
         step = datetime.timedelta(seconds=1)
@@ -46,14 +52,14 @@ def save_week_stats(model, model_folder, data_folder, operation_type, sample_siz
         while current < end:
             timestamps.append(matplotlib.dates.date2num(current))
             current += step
-        jl.dump(timestamps, 'Blocco 1/visualization/timestamps_list')
+        jl.dump(timestamps, 'timestamps_list')
     else:
-        timestamps = jl.load('Blocco 1/visualization/timestamps_list')
+        timestamps = jl.load('timestamps_list')
 
     metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
     metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
-    stats = pd.read_csv(model_folder + 'statistiche.csv')
+    stats = pd.read_csv(model_folder + 'AHA_stats/statistiche.csv')
     hemi_cluster = int(float(stats['AHA'][2]) > float(stats['AHA'][3]))
 
     guessed = []
@@ -64,7 +70,7 @@ def save_week_stats(model, model_folder, data_folder, operation_type, sample_siz
     trend_block_size = 36            # Numero di finestre (da 600 secondi) raggruppate in un blocco
     significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
-    for i in range (1,61):
+    for i in range (1, metadata.shape[0]+1):
 
         df = pd.read_csv(data_folder + 'data/' + str(i) + '_week_1sec.csv')
         magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
@@ -221,7 +227,7 @@ def save_week_stats(model, model_folder, data_folder, operation_type, sample_siz
         axs[6].legend()
         #############################################################
         
-        if(plot_show==True):
+        if(plot_show == True):
             plt.show()
         plt.close()
 
@@ -232,24 +238,22 @@ def save_week_stats(model, model_folder, data_folder, operation_type, sample_siz
     guessed_hemiplegic_patients = len(metadata[(metadata['hemi']==2) & (metadata['guessed']==True)])
     guessed_healthy_patients = len(metadata[(metadata['hemi']==1) & (metadata['guessed']==True)])
     uncertain_patients = guessed.count('uncertain')
-
-    folder_name = 'Blocco 1/'+ operation_type +'_version/week_predictions/' + model_name + '/'
-    os.makedirs(folder_name, exist_ok=True)
-    with open(folder_name + 'predictions_stats.txt', "w") as f:
+    
+    with open(stats_folder + 'predictions_stats.txt', "w") as f:
         f.write("Guessed patients: " + str(guessed_healthy_patients + guessed_hemiplegic_patients) + "/60 (" + str(((guessed_healthy_patients + guessed_hemiplegic_patients)/60)*100) + "%)\n")
         f.write("Guessed hemiplegic patients: " + str(guessed_hemiplegic_patients) + "/34 (" + str((guessed_hemiplegic_patients/34)*100) + "%)\n")
         f.write("Guessed healthy patients: " + str(guessed_healthy_patients) + "/26 (" + str((guessed_healthy_patients/26)*100) + "%)\n")
         f.write("Uncertain patients: " + str(uncertain_patients) + "/60 (" + str((uncertain_patients/60)*100) + "%)")
 
-    metadata.to_csv(folder_name + 'predictions_dataframe.csv')
+    metadata.to_csv(stats_folder + 'predictions_dataframe.csv')
 
-    metadata.plot.scatter(x='healthy_percentage', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AHA.png')
-    metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_week.png')
-    metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_healthyPerc_AI_aha.png')
-    #metadata.plot.scatter(x='AI_week', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_week_AHA.png')
-    #metadata.plot.scatter(x='AI_aha', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(folder_name + 'plot_AI_aha_AHA.png')
+    metadata.plot.scatter(x='healthy_percentage', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AHA.png')
+    metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AI_week.png')
+    metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AI_aha.png')
+    #metadata.plot.scatter(x='AI_week', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_AI_week_AHA.png')
+    #metadata.plot.scatter(x='AI_aha', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_AI_aha_AHA.png')
 
-    print('Modello usato per calcolare hp: ', model_name)
+    print('Modello usato per calcolare hp: ', model.get_params())
     print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
     print("Coefficiente di Pearson tra max hp e aha:      ", (np.corrcoef(max_hp_list, metadata['AHA'].values))[0][1])
     print("Coefficiente di Pearson tra maxquart hp e aha: ", (np.corrcoef(max_quart_hp_list, metadata['AHA'].values))[0][1])
