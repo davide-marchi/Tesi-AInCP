@@ -61,16 +61,7 @@ for method, window_size, model_specs in itertools.product(l_method, l_window_siz
         save_AHA_stats(model, model_folder + 'AHA_stats/', data_folder, method, window_size)
         #save_AHA_stats(X, y_AHA, y_MACS, y_pred, model, stats_folder)
     
-    if not(os.path.exists(model_folder + "week_stats")):
-        print("Inizio a fare statistiche su dati week")
-        #print("Visualizing patients dashboard:\n")
-        #save_week_stats(data_folder, model_name, model["method"], model_folder)
-        save_week_stats(model, model_folder, data_folder, method, window_size)
-
-
-    '''
-    1. va bene la funzione di scoring?
-    2. parlare della frammentazione
-    3. test su AHA con cross validation
-    4. KFold oppure stratifiedKFold?
-    '''
+    #if not(os.path.exists(model_folder + "week_stats")):
+    print("Inizio a fare statistiche su dati week")
+    #save_week_stats(data_folder, model_name, model["method"], model_folder)
+    save_week_stats(model, model_folder, data_folder, method, window_size)

@@ -222,8 +222,11 @@ def save_week_stats(model, model_folder, data_folder, operation_type, sample_siz
         axs[6].grid()
         axs[6].set_ylim([-1,101])
         axs[6].axhline(y = aha, color = 'b', linestyle = '--', linewidth= 1, label='aha')
-        axs[6].plot(aha_list_smooth, c = 'green')
-        axs[6].plot([np.nan if aha - conf <= x <= aha + conf else x for x in aha_list_smooth], c ='red')
+        axs[6].plot(aha_list_smooth, c = 'grey')
+        axs[6].plot([x if aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
+        axs[6].plot([x if aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
+        axs[6].plot([x if x <= aha - conf else np.nan for x in aha_list_smooth], c ='orange')
+        axs[6].plot([x if x <= aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
         axs[6].legend()
         #############################################################
         
