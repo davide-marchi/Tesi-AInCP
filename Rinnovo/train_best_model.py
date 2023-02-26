@@ -29,10 +29,11 @@ def train_best_model(data_folder, model_folder, model_type, model_params, method
  
     param_grid = model_params
     #                                                             dobbiamo fixare il seed?
-    parameter_tuning_method = GridSearchCV(model, param_grid, cv=StratifiedKFold(n_splits=5, shuffle=True), return_train_score=True, verbose=3, scoring=scorer_f)
+    parameter_tuning_method = GridSearchCV(model, param_grid, cv=StratifiedKFold(n_splits=5, shuffle=True), n_jobs=-1, return_train_score=True, verbose=3, scoring=scorer_f)
     parameter_tuning_method.fit(X, y)
 
     model = parameter_tuning_method.best_estimator_
+    
 
     stats_folder = model_folder + 'training_stats/'
     os.makedirs(stats_folder, exist_ok = True)

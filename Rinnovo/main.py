@@ -39,7 +39,7 @@ shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat']               # ['concat','difference', 'ai']
 l_window_size =         [600]                               # [300, 600, 900]
-l_model_specs =         [kmeans]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_model_specs =         [shapedtw]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 for method, window_size, model_specs in itertools.product(l_method, l_window_size, l_model_specs):
 
@@ -62,6 +62,12 @@ for method, window_size, model_specs in itertools.product(l_method, l_window_siz
         #save_AHA_stats(X, y_AHA, y_MACS, y_pred, model, stats_folder)
     
     #if not(os.path.exists(model_folder + "week_stats")):
-    print("Inizio a fare statistiche su dati week")
+    #print("Inizio a fare statistiche su dati week")
     #save_week_stats(data_folder, model_name, model["method"], model_folder)
-    save_week_stats(model, model_folder, data_folder, method, window_size)
+    #save_week_stats(model, model_folder, data_folder, method, window_size)
+
+    # DEVE OUTPUTTARE
+    #   - IL MODELLO MIGLIORE DI TUTTI E IL SUO SCORE
+    #   - IL MODELLO SUPERVISED MIGLIORE E IL SUO SCORE
+    #   - IL MODELLO UNSUPERVISED MIGLIORE DI TUTTI E IL SUO SCORE
+    #   - (DATO CHE CI SIAMO CHE STAMPI UNA VERA E PROPRIA CLASSIFICA)
