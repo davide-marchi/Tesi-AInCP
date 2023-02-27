@@ -13,10 +13,12 @@ from create_windows import create_windows
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):
+        #return f1_score(Y_train, y_pred, average='weighted')
         return f1_score(Y_train, y_pred)
     else:
         inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
         return max(f1_score(Y_train, y_pred),f1_score(Y_train, inverted_y_pred))
+        #return max(f1_score(Y_train, y_pred, average='weighted'),f1_score(Y_train, inverted_y_pred, average='weighted'))
 
 
 def train_best_model(data_folder, gridsearch_folder, model_type, model_params, method, window_size):

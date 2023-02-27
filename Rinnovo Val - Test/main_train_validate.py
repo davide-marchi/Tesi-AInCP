@@ -38,8 +38,8 @@ shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
 shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa'] }
 shapedtw = (shapedtw_type, shapedtw_params)
 
-l_method =              ['concat', 'ai']               # ['concat','difference', 'ai']
-l_window_size =         [600, 900]                               # [300, 600, 900]
+l_method =              ['concat', 'ai', 'difference']               # ['concat','difference', 'ai']
+l_window_size =         [300,600,900]                               # [300, 600, 900]
 l_gridsearch_specs =    [kmeans]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
