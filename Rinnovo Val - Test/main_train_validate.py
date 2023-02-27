@@ -42,8 +42,8 @@ l_method =              ['concat', 'ai']               # ['concat','difference',
 l_window_size =         [600, 900]                               # [300, 600, 900]
 l_gridsearch_specs =    [kmeans]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
-estimators_df = pd.DataFrame()
-best_estimators_df = pd.DataFrame()
+estimators_l = []
+best_estimators_l = []
 
 for method, window_size, gridsearch_specs in itertools.product(l_method, l_window_size, l_gridsearch_specs):
 
@@ -58,23 +58,25 @@ for method, window_size, gridsearch_specs in itertools.product(l_method, l_windo
         #print("Model not found -> Training started\n")
         train_best_model(data_folder, gridsearch_folder, model_type, model_params, method, window_size)
 
-    cv_results = pd.read_csv(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv')
+    cv_results = pd.read_csv(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv', index_col=0)
+    cv_results.columns = cv_results.columns.str.strip()
     cv_results['method'] = method
     cv_results['window_size'] = window_size
-    cv_results['model_type'] = model_type
+    cv_results['model_type'] = model_type.split(".")[-1]
 
-    estimators_df = pd.concat([estimators_df, cv_results])
-    best_estimators_df = pd.concat([best_estimators_df, cv_results.iloc[cv_results['rank_test_score'].argmin()]])
+    print('\n\n----------cv_results--------------\n\n')
+    print(cv_results.dtypes)
+    print('\n\n-----------estimators-----------\n\n')
+    print(estimators_l)
+    print('\n\n--------concat_estimators----------------\n\n')
+    estimators_l.append(cv_results)
+    best_estimators_l.append(cv_results.iloc[[cv_results['rank_test_score'].argmin()]])
+    print(estimators_l)
 
-print(estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False))
+estimators_df = pd.concat(estimators_l, ignore_index=True)
+best_estimators_df = pd.concat(best_estimators_l, ignore_index=True)
+
 print('\n\n------------------------\n\n')
-print(best_estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False))
 
 estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('estimators_results.csv')
 best_estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('best_estimators_results.csv')
-
-# DEVE OUTPUTTARE
-#   - IL MODELLO MIGLIORE DI TUTTI E IL SUO SCORE
-#   - IL MODELLO SUPERVISED MIGLIORE E IL SUO SCORE
-#   - IL MODELLO UNSUPERVISED MIGLIORE DI TUTTI E IL SUO SCORE
-#   - (DATO CHE CI SIAMO CHE STAMPI UNA VERA E PROPRIA CLASSIFICA)
