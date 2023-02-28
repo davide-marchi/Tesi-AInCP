@@ -1,0 +1,8 @@
+{
+    "Best index": 0,
+    "Best score": 0.60599128540305,
+    "Refit time": 63.7608323097229,
+    "Best params": {
+        "shape_descriptor_function": "raw"
+    }
+}

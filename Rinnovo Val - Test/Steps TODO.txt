@@ -1,0 +1,16 @@
+1. Creare file che prende in input il file best_estimators_results.csv
+2. Scelgo miglior estimator ai, concat e difference (o usando un'altra regola)
+3. Controllo se esistete i regressore da hp_multipred ad AHA e lo alleno
+    3.1 Se non esiste lo alleno splittando i dati week
+4. Creo il dashboard sui dati week rimanenti
+(5. Nel caso in cui ci fosse maggior correlazione tra hp_multipred e AHA rispetto che tra ai e AHA alora abbiamo vinto)
+
+
+Y_ai        = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP e poi?
+Y_concat    = [1, 0, 1, 1, 0, 0, 1, 0, 0]
+Y_diff      = [1, 1, 0, 0, 0, 1, 0, 0, 0]
+
+finestra    =        ->|hp 0.41666|->         hp calcolato su più predictions (hp_multipred)
+
+Y_ensamble  = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP_esamble e poi?
+finestra_ens=        ->|hp_ens 0.5|->
