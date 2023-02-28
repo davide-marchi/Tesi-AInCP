@@ -19,11 +19,11 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean', 'dba'], 'init_algorithm': ['kmeans++', 'forgy', 'random'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
-kmedoids_params = {'distance_params': [None], 'init_algorithm': ['random'], 'max_iter': [300], 'metric': ['dtw'], 'n_clusters': [8], 'n_init': [10], 'random_state': [None], 'tol': [1e-06], 'verbose': [False]}
+kmedoids_params = {'init_algorithm': ['kmeans++', 'forgy', 'random'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
 kmedoids = (kmedoids_type, kmedoids_params)
 
 cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
@@ -40,22 +40,21 @@ shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'ai', 'difference']               # ['concat','difference', 'ai']
 l_window_size =         [300,600,900]                               # [300, 600, 900]
-l_gridsearch_specs =    [kmeans]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_gridsearch_specs =    [kmeans, kmedoids]                                    # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
 
 for method, window_size, gridsearch_specs in itertools.product(l_method, l_window_size, l_gridsearch_specs):
 
-    print('Method: ', method, '\nWindow size: ', window_size, '\nGrid search specs: ', gridsearch_specs)
-
     model_type, model_params = gridsearch_specs
+
+    print('Method: ', method, '\nWindow size: ', window_size, '\nModel type: ', model_type, '\nGrid search params: ', model_params)
 
     gridsearch_folder = "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10] + "/"
 
     if not(os.path.exists(gridsearch_folder + "best_estimator.zip")) or not(os.path.exists(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv')):
 
-        #print("Model not found -> Training started\n")
         train_best_model(data_folder, gridsearch_folder, model_type, model_params, method, window_size)
 
     cv_results = pd.read_csv(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv', index_col=0)
@@ -64,19 +63,11 @@ for method, window_size, gridsearch_specs in itertools.product(l_method, l_windo
     cv_results['window_size'] = window_size
     cv_results['model_type'] = model_type.split(".")[-1]
 
-    print('\n\n----------cv_results--------------\n\n')
-    print(cv_results.dtypes)
-    print('\n\n-----------estimators-----------\n\n')
-    print(estimators_l)
-    print('\n\n--------concat_estimators----------------\n\n')
     estimators_l.append(cv_results)
     best_estimators_l.append(cv_results.iloc[[cv_results['rank_test_score'].argmin()]])
-    print(estimators_l)
 
 estimators_df = pd.concat(estimators_l, ignore_index=True)
 best_estimators_df = pd.concat(best_estimators_l, ignore_index=True)
-
-print('\n\n------------------------\n\n')
 
 estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('estimators_results.csv')
 best_estimators_df.sort_values(by=['mean_test_score', 'std_test_score'], ascending=False).to_csv('best_estimators_results.csv')

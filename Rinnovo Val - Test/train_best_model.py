@@ -13,12 +13,10 @@ from create_windows import create_windows
 def scorer_f(estimator, X_train, Y_train):
     y_pred = estimator.predict(X_train)
     if issubclass(type(estimator), BaseClassifier):
-        #return f1_score(Y_train, y_pred, average='weighted')
-        return f1_score(Y_train, y_pred)
+        return f1_score(Y_train, y_pred, average='weighted')
     else:
         inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
-        return max(f1_score(Y_train, y_pred),f1_score(Y_train, inverted_y_pred))
-        #return max(f1_score(Y_train, y_pred, average='weighted'),f1_score(Y_train, inverted_y_pred, average='weighted'))
+        return max(f1_score(Y_train, y_pred, average='weighted'),f1_score(Y_train, inverted_y_pred, average='weighted'))
 
 
 def train_best_model(data_folder, gridsearch_folder, model_type, model_params, method, window_size):
@@ -40,12 +38,8 @@ def train_best_model(data_folder, gridsearch_folder, model_type, model_params, m
     os.makedirs(stats_folder, exist_ok = True)
     pd.DataFrame(parameter_tuning_method.cv_results_).to_csv(stats_folder + "cv_results.csv")
     
-    with open(stats_folder + 'best_params.json', 'w') as f:
-        f.write(json.dumps(parameter_tuning_method.best_params_, indent=4))
-    #with open(stats_folder + 'best_index.txt', 'w') as f:
-        #f.write(json.dumps(parameter_tuning_method.best_index_, indent=4))
-    #with open(stats_folder + 'best_score.txt', 'w') as f:
-        #f.write(json.dumps(parameter_tuning_method.best_score_, indent=4))
+    with open(stats_folder + 'best_estimator_stats.json', 'w') as f:
+        f.write(json.dumps({"Best index":int(parameter_tuning_method.best_index_), "Best score":parameter_tuning_method.best_score_, "Refit time":parameter_tuning_method.refit_time_, "Best params": parameter_tuning_method.best_params_}, indent=4))
 
     estimator.save(gridsearch_folder + "best_estimator")
-    print('model saved : ', model_type)
+    print('Best estimator saved\n\n------------------------------------------------\n')
