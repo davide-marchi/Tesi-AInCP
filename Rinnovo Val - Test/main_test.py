@@ -53,8 +53,38 @@ for estimators_specs in estimators_specs_list:
             estimators_list.append(BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip'))
             print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
 
+            
+'''
+- opzione 1 separiamo completamente allenamento regressore dal test (come all'inizio)
+    -le cose sono separate (BUONO O NO?)
+    -qui si fanno solo 3 predict (ma le altre 3 non è che non le facciamo)
 
+train_regressor(0.5) = allena regressore su 50% malati e 50% sani
 
+se è 50 e 50 si può usare indici pari-dispari
+
+se no possiamo usare KFOLD? per trainare regressore e testarlo 80-20
+
+-------------------------------------------------------------------------------------------------
+if regressor does not exists:
+aha_list = []
+def:
+    for i in 60 pazienti
+        [...] elaborare samples
+        y_pred_l = []
+        for es in estimators
+            y_pred_l.append([es.predict()])
+        
+        hp_list.append(elaborate_hp(y_pred_l))
+        aha_list.append(metadata['aha'].iloc[i-1])
+
+    corcoeff(hp_list, aha_list)  ? a che serve ? è la qualità del regressore HP->AHA
+        
+    hp_to_aha_regressor = train_regressor(hp_list, aha_list)
+
+print_dashboard_foreach_patient(hp_to_aha_regressor)
+-------------------------------------------------------------------------------------------------
+'''
 #if not(os.path.exists(hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10])):
     # Dobbiamo allenare il regressore
 
