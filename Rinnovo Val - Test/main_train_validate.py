@@ -19,7 +19,7 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean', 'dba'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
@@ -40,9 +40,9 @@ shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
 shapedtw_params =  {'shape_descriptor_function': ['raw', 'slope']}
 shapedtw = (shapedtw_type, shapedtw_params)
 
-l_method =              ['concat', 'ai', 'difference']          # ['concat','difference', 'ai']
-l_window_size =         [600]                                   # [300, 600, 900]
-l_gridsearch_specs =    [cnn, boss, shapedtw, kmedoids, kmeans]                                   # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_method =              ['concat', 'difference', 'ai']                                      # ['concat','difference', 'ai']
+l_window_size =         [600]                                       # [300, 600, 900]
+l_gridsearch_specs =    [kmeans, kmedoids, cnn, boss, shapedtw]     # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
