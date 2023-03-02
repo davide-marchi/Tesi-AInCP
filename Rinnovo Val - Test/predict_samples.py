@@ -33,17 +33,24 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
         is_hemiplegic = (metadata['hemi'].iloc[patient-1] == 2)
 
         y_list = []
-        cluster_healthy_samples = 0     # Non emiplegici
-        cluster_hemiplegic_samples = 0  # Emiplegici
+        hp_tot_list = []
+        
         # Fase di predizione
         for es in estimators:
+
             y = es.predict(np.array(series))
+
             for index in to_discard:
                 y[index] = -1
+
             if is_hemiplegic:
-                hemi_cluster = 0 if y.count(0) > y.count(1) else 1
+                hemi_cluster = 0 if np.count_nonzero(y == 0) > np.count_nonzero(y == 1) else 1
             else:
-                hemi_cluster = 1 if y.count(0) > y.count(1) else 0
+                hemi_cluster = 1 if np.count_nonzero(y == 0) > np.count_nonzero(y == 1) else 0
+
+            cluster_healthy_samples = 0     # Non emiplegici
+            cluster_hemiplegic_samples = 0  # Emiplegici
+
             for k in range(len(y)):
                 if y[k] == hemi_cluster:
                     cluster_hemiplegic_samples += 1
@@ -53,11 +60,13 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
                     y[k] = 1
                 else:
                     y[k] = 0
+            
             y_list.append([y])
 
-        hp_tot = np.nan
-        if (cluster_healthy_samples != 0 or cluster_hemiplegic_samples != 0):
-            hp_tot = (cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100
+            hp_tot = np.nan
+            if (cluster_healthy_samples != 0 or cluster_hemiplegic_samples != 0):
+                hp_tot = (cluster_healthy_samples / (cluster_hemiplegic_samples + cluster_healthy_samples)) * 100
 
+            hp_tot_list.append(hp_tot)
 
-        return y_list, [hp_tot]
+        return y_list, hp_tot_list

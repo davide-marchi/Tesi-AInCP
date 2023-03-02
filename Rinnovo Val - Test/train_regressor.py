@@ -7,16 +7,16 @@ from predict_samples import predict_samples
 
 def train_regressor(data_folder, metadata, estimators, window_size, method, reg_path):
 
-    hp_tot_list = []
+    hp_tot_lists = []
 
     for i in range (1, metadata.shape[0]+1):
-        _, hp_tot= predict_samples(data_folder, metadata, estimators, window_size, method, i)
-        hp_tot_list.append(hp_tot)
+        _, hp_tot_list = predict_samples(data_folder, metadata, estimators, window_size, method, i)
+        hp_tot_lists.append([hp_tot_list])
 
     lin_reg = LinearRegression()
 
     # Create two arrays to shuffle
-    X = np.array(hp_tot_list)
+    X = np.array(hp_tot_lists)
     y = np.array(metadata['aha'].values)
 
     # Generate a permutation index and use it to shuffle both arrays
