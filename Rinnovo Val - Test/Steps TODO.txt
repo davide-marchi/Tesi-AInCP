@@ -14,3 +14,75 @@ finestra    =        ->|hp 0.41666|->         hp calcolato su più predictions (
 
 Y_ensamble  = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP_esamble e poi?
 finestra_ens=        ->|hp_ens 0.5|->
+
+
+
+y_pred_l = [[[1, -1, 0, 1, -1], [1, -1, 1, 0, -1], [0, -1, 1, 1, -1]], [[1, -1, 0, 1, -1], [1, -1, 1, 0, -1], [0, -1, 1, 1, -1]]]
+            _________________________________________________________   ________________________________________________________
+                                    patient 1                         ,                      patient 2 ...
+
+
+'''
+- opzione 1 separiamo completamente allenamento regressore dal test (come all'inizio)
+    -le cose sono separate (BUONO O NO?)
+    -qui si fanno solo 3 predict (ma le altre 3 non è che non le facciamo)
+
+train_regressor(0.5) = allena regressore su 50% malati e 50% sani
+
+se è 50 e 50 si può usare indici pari-dispari
+
+se no possiamo usare KFOLD? per trainare regressore e testarlo 80-20
+
+-------------------------------------------------------------------------------------------------
+if regressor does not exists:
+aha_list = []
+for i in 60 pazienti
+    def: (save_week_stats ma senza plot)
+        [...] elaborare samples
+        y_pred_l = []
+        for es in estimators
+            y_pred_l.append([es.predict()])
+        
+        hp_list.append(elaborate_hp(y_pred_l))
+        aha_list.append(metadata['aha'].iloc[i-1])
+
+    corcoeff(hp_list, aha_list)  ? a che serve ? è la qualità del regressore HP->AHA
+        
+    hp_to_aha_regressor = train_regressor(hp_list, aha_list)
+
+print_dashboard_foreach_patient(hp_to_aha_regressor)
+-------------------------------------------------------------------------------------------------
+fare due funzioni :
+
+    def predict_samples(i, estimators) -> le sue predizioni e il suo hp
+        X=create_samples(i)
+        count_1 = 
+        count_meno_1 =
+        for es in estimators:
+            y_pred_l.append([es.predict(X)])
+            transform_and_count in 1, -1, 0
+        hp_tot = count1 / sum(count1,count-1)
+        
+        return y_pred_l, hp_tot
+
+    def train_regressor(estimators) -> crea file regressore
+        for i in 60 patients:
+            _, hp_tot= predict_samples(i, es)
+            hp_tot_l.append(hp_tot)
+
+        save(reg.fit(hp_tot, metadata['aha']))
+
+    main_test(): 
+        if(regressor does not exists) -> train_regressor(estimators)
+        for 60 patients:
+            predictions, hp_tot = predict_samples(i, es)
+            aha = regressor.predict(predictions)
+            plot_dashboard(predictions, aha, hp_tot)
+
+'''
+REGRESSORI
+    HASH(concat(param1,param2,param3)).zip
+
+    HASH(concat(param1,param2,param3)).zip
+
+ 

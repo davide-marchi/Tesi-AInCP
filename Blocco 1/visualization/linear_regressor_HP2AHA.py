@@ -22,9 +22,15 @@ def regression_and_correlation(path_to_csv,number_of_patients):
 
     #############################################################################################
 
-    X_train, _, y_train, _ = train_test_split(X, y, test_size=1, shuffle=True)
 
-    lin_reg.fit(X_train, y_train)
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1, shuffle=True)
+
+    print(X)
+    print(y)
+    #print(X_test.shape)
+    #print(y_test.shape)
+
+    lin_reg.fit(X, y)
 
     jl.dump(lin_reg, 'Blocco 1/visualization/regressor_HP2AHA_KMEANS_K2_W600_kmeans++_euclidean_mean')
 
