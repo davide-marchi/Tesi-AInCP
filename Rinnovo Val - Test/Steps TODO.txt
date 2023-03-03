@@ -75,9 +75,9 @@ fare due funzioni :
     main_test(): 
         if(regressor does not exists) -> train_regressor(estimators)
         for 60 patients:
-            predictions, hp_tot = predict_samples(i, es)
-            aha = regressor.predict(predictions)
-            plot_dashboard(predictions, aha, hp_tot)
+            predictions, hp_tot_list = predict_samples(i, es)
+            aha = regressor.predict([hp_tot_list])
+            plot_dashboard(predictions, aha, hp_tot_list)
 
 '''
 REGRESSORI

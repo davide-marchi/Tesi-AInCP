@@ -1,21 +1,21 @@
-import os
-import datetime
-import matplotlib
 import numpy as np
 import pandas as pd
-import joblib as jl
-import matplotlib.pyplot as plt
 from elaborate_magnitude import elaborate_magnitude
 
-def predict_samples(data_folder, metadata, estimators, window_size, method, patient):
+def predict_samples(data_folder, metadata, estimators, patient):
         
         
         df = pd.read_csv(data_folder + 'data/' + str(patient) + '_week_1sec.csv')
         magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
         magnitude_ND = np.sqrt(np.square(df['x_ND']) + np.square(df['y_ND']) + np.square(df['z_ND']))
 
-        series = []
         to_discard = []
+
+        #TODO: fix window size ?
+        window_size = estimators[0]['window_size']
+
+        for es in estimators:
+            es['series'] = []
 
         # Fase di chunking
         for j in range (0, len(magnitude_D), window_size):
@@ -24,8 +24,9 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
             chunk_ND = magnitude_ND.iloc[j:j + window_size]
 
             if chunk_D.size == window_size and chunk_ND.size == window_size:
-
-                series.append(elaborate_magnitude(method, chunk_D, chunk_ND))
+                
+                for es in estimators:
+                    es['series'].append(elaborate_magnitude(es['method'], chunk_D, chunk_ND))
 
                 if chunk_D.agg('sum') == 0 and chunk_ND.agg('sum') == 0:
                     to_discard.append(int(j/window_size))
@@ -37,8 +38,9 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
         
         # Fase di predizione
         for es in estimators:
-
-            y = es.predict(np.array(series))
+            print(np.array(es['series']).shape)
+            y = es['estimator'].predict(np.array(es['series']))
+            print(es['method'])
 
             for index in to_discard:
                 y[index] = -1
@@ -61,7 +63,7 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
                 else:
                     y[k] = 0
             
-            y_list.append([y])
+            y_list.append(y)
 
             hp_tot = np.nan
             if (cluster_healthy_samples != 0 or cluster_hemiplegic_samples != 0):
@@ -69,4 +71,4 @@ def predict_samples(data_folder, metadata, estimators, window_size, method, pati
 
             hp_tot_list.append(hp_tot)
 
-        return y_list, hp_tot_list
+        return y_list, hp_tot_list, magnitude_D, magnitude_ND

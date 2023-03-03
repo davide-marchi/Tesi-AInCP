@@ -1,17 +1,15 @@
-import json
 import hashlib
-import re
 import os
+import pandas as pd
+from sktime.base import BaseEstimator
+from train_regressor import train_regressor
+import joblib as jl
+import numpy as np
+from predict_samples import predict_samples
 import datetime
 import matplotlib
-import numpy as np
-import pandas as pd
-import joblib as jl
 import matplotlib.pyplot as plt
-from sktime.base import BaseEstimator
-from elaborate_magnitude import elaborate_magnitude
-from train_regressor import train_regressor
-
+import itertools
 
 # Funzione per prendere la media del primo quartile dei massimi valori di una lista
 def first_quartile_of_max(my_list):
@@ -40,7 +38,7 @@ estimators_specs_list = []
 #TODO: controllare che abbiano tutti la stessa window_size
 estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'concat'].iloc[0])
 estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
-estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
+#estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
 
 
 estimators_list = []
@@ -55,18 +53,179 @@ for estimators_specs in estimators_specs_list:
         if os.path.isdir(os.path.join(parent_dir, subdir)):
             # Access the current subdirectory
             estimator = BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-            estimators_list.append(estimator)
+
+            estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size']})
+
             print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
             model_params_concat = model_params_concat + str(estimator.get_params())
 
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
+metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
 reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
 
 if not(os.path.exists(reg_path)):
     #Dobbiamo allenare il regressore
-    train_regressor(data_folder, metadata, estimators_list, estimators_specs_list[0]['window_size'], estimators_specs_list[0]['method'], reg_path)
+    train_regressor(data_folder, metadata, estimators_list, reg_path)
+
+regressor = jl.load(reg_path)
+
+stats_folder = 'week_stats'
+os.makedirs(stats_folder, exist_ok=True)
+if not os.path.exists('timestamps_list'):
+    start = datetime.datetime(2023, 1, 1)
+    end = datetime.datetime(2023, 1, 7)
+    step = datetime.timedelta(seconds=1)
+    timestamps = []
+    current = start
+    while current < end:
+        timestamps.append(matplotlib.dates.date2num(current))
+        current += step
+    jl.dump(timestamps, 'timestamps_list')
+else:
+    timestamps = jl.load('timestamps_list')
+
+trend_block_size = 36            # Numero di finestre (da 600 secondi) raggruppate in un blocco
+significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+healthy_percentage = []
+sample_size = estimators_list[0]['window_size']
+
+plot_show = False
+'''
+answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
+# If the user enters "yes", show the plot
+if answer.lower() == "yes":
+    plot_show = True
+'''
+predicted_aha_list = []
+
+for i in range (1, metadata.shape[0]+1):
+    predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
+    healthy_percentage.append(hp_tot_list)
+    real_aha = metadata['AHA'].iloc[i-1]
+    predicted_aha = regressor.predict(np.array([hp_tot_list]))
+    predicted_aha = 100 if predicted_aha > 100 else predicted_aha
+    predicted_aha_list.append(predicted_aha)
+
+    print('Patient ', i)
+    print(' - AHA:     ', real_aha)
+    print(' - HP:      ', hp_tot_list)
+    print(' - AHA predicted from HP: ', predicted_aha)
 
 
-#save_week_stats(best_concat, best_ai, best_difference, regressor,)
+    #################### ANDAMENTO WEEK GENERALE ####################
+
+    # Fase di plotting
+    fig, axs = plt.subplots(7)
+    fig.suptitle('Patient ' + str(i) + ' week trend, AHA: ' + str(real_aha))
+    #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
+    #axs[0].xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(12))
+    #axs[0].xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(n=6))
+    #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%H-%M'))
+    axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H:%M'))
+    axs[0].plot(timestamps, magnitude_D)
+    axs[0].plot(timestamps, magnitude_ND)
+
+    #################### GRAFICO DEI PUNTI ####################
+    for pred in predictions:
+        axs[1].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=5) 
+
+    #################### ANDAMENTO A BLOCCHI ####################
+    for pred in predictions:
+        h_perc_list = []
+        subList = [pred[n:n+trend_block_size] for n in range(0, len(pred), trend_block_size)]
+        for l in subList:
+            n_hemi = l.tolist().count(-1)
+            n_healthy = l.tolist().count(1)
+            if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_threshold:
+                h_perc_list.append(np.nan)
+            else:
+                h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
+
+        h_perc_list.append(h_perc_list[-1])
+        axs[2].grid()
+        axs[2].set_ylim([-1,101])
+        axs[2].plot(h_perc_list, drawstyle = 'steps-post')
+    
+    ########################## AI PLOT ##########################
+    ai_list = []
+    subList_magD = [magnitude_D[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_D), trend_block_size*sample_size)]
+    subList_magND = [magnitude_ND[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_ND), trend_block_size*sample_size)]
+    for l in range(len(subList_magD)):        
+        if (subList_magD[l].mean() + subList_magND[l].mean()) == 0:
+            ai_list.append(np.nan)
+        else:
+            ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
+
+    axs[3].grid()
+    axs[3].set_ylim([-101,101])
+    axs[3].plot(ai_list)
+    
+    ##################### ANDAMENTO SMOOTH ######################
+    h_perc_list_smooth_list = []
+    axs[4].grid()
+    axs[4].set_ylim([-1,101])
+    for pred in predictions:
+        h_perc_list_smooth = []
+        h_perc_list_smooth_significativity = []
+        subList_smooth = [pred[n:n+trend_block_size] for n in range(0, len(pred)-trend_block_size+1)]
+        for l in subList_smooth:
+            n_hemi = l.tolist().count(-1)
+            n_healthy = l.tolist().count(1)
+            h_perc_list_smooth_significativity.append(((n_hemi + n_healthy) / trend_block_size) * 100)
+            if (((n_hemi + n_healthy) / trend_block_size) * 100) < significativity_threshold:
+                h_perc_list_smooth.append(np.nan)
+            else:
+                h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
+
+        axs[4].plot(h_perc_list_smooth)
+        h_perc_list_smooth_list.append(h_perc_list_smooth)
+        
+    axs[5].grid()
+    axs[5].set_ylim([-1,101])
+    axs[5].axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='threshold')
+    axs[5].plot(h_perc_list_smooth_significativity)
+    axs[5].legend()
+
+    aha_list_smooth = []
+    for elements in zip(*h_perc_list_smooth_list):
+        if np.isnan(elements[0]):
+            aha_list_smooth.append(np.nan)
+        else:
+            predicted_aha = (regressor.predict(np.array([elements])))
+            aha_list_smooth.append(predicted_aha if predicted_aha <= 100 else 100)
+
+
+
+    ##################### PREDICTED AHA PLOT ####################
+    conf = 5
+    axs[6].grid()
+    axs[6].set_ylim([-1,101])
+    axs[6].axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='aha')
+    axs[6].plot(aha_list_smooth, c = 'grey')
+    axs[6].plot([x if real_aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
+    axs[6].plot([x if real_aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
+    axs[6].plot([x if x <= real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
+    axs[6].plot([x if x <= real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
+    axs[6].legend()
+    #############################################################
+    
+    plt.savefig(stats_folder + '/subject_' +str(i)+'.png')
+    
+    if(plot_show == True):
+        plt.show() 
+    plt.close()
+
+metadata['healthy_percentage'] = healthy_percentage
+metadata['predicted_aha'] = predicted_aha_list
+
+metadata.to_csv(stats_folder + '/predictions_dataframe.csv')
+
+#metadata.plot.scatter(x='healthy_percentage', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AHA.png')
+#metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AI_week.png')
+#metadata.plot.scatter(x='healthy_percentage', y='AI_aha', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AI_aha.png')
+
+
+#print("Coefficiente di Pearson tra hp e aha:          ", (np.corrcoef(metadata['healthy_percentage'], metadata['AHA'].values))[0][1])
+
