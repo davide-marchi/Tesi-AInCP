@@ -1,11 +1,3 @@
-1. Creare file che prende in input il file best_estimators_results.csv
-2. Scelgo miglior estimator ai, concat e difference (o usando un'altra regola)
-3. Controllo se esistete i regressore da hp_multipred ad AHA e lo alleno
-    3.1 Se non esiste lo alleno splittando i dati week
-4. Creo il dashboard sui dati week rimanenti
-(5. Nel caso in cui ci fosse maggior correlazione tra hp_multipred e AHA rispetto che tra ai e AHA alora abbiamo vinto)
-
-
 Y_ai        = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP e poi?
 Y_concat    = [1, 0, 1, 1, 0, 0, 1, 0, 0]
 Y_diff      = [1, 1, 0, 0, 0, 1, 0, 0, 0]
@@ -22,35 +14,6 @@ y_pred_l = [[[1, -1, 0, 1, -1], [1, -1, 1, 0, -1], [0, -1, 1, 1, -1]], [[1, -1, 
                                     patient 1                         ,                      patient 2 ...
 
 
-'''
-- opzione 1 separiamo completamente allenamento regressore dal test (come all'inizio)
-    -le cose sono separate (BUONO O NO?)
-    -qui si fanno solo 3 predict (ma le altre 3 non è che non le facciamo)
-
-train_regressor(0.5) = allena regressore su 50% malati e 50% sani
-
-se è 50 e 50 si può usare indici pari-dispari
-
-se no possiamo usare KFOLD? per trainare regressore e testarlo 80-20
-
--------------------------------------------------------------------------------------------------
-if regressor does not exists:
-aha_list = []
-for i in 60 pazienti
-    def: (save_week_stats ma senza plot)
-        [...] elaborare samples
-        y_pred_l = []
-        for es in estimators
-            y_pred_l.append([es.predict()])
-        
-        hp_list.append(elaborate_hp(y_pred_l))
-        aha_list.append(metadata['aha'].iloc[i-1])
-
-    corcoeff(hp_list, aha_list)  ? a che serve ? è la qualità del regressore HP->AHA
-        
-    hp_to_aha_regressor = train_regressor(hp_list, aha_list)
-
-print_dashboard_foreach_patient(hp_to_aha_regressor)
 -------------------------------------------------------------------------------------------------
 fare due funzioni :
 
@@ -79,10 +42,23 @@ fare due funzioni :
             aha = regressor.predict([hp_tot_list])
             plot_dashboard(predictions, aha, hp_tot_list)
 
-'''
-REGRESSORI
-    HASH(concat(param1,param2,param3)).zip
 
-    HASH(concat(param1,param2,param3)).zip
 
- 
+ ---------------------------------------------------------------------------
+
+criterio= [best_concat, best_ai, best_diff, best_mix, treshold]
+
+def build_ensemble(criterio):
+
+    #build query in base al criterio
+    switch 
+        -
+        -
+        -
+
+    append models in estimator list
+
+    return estimators_list
+
+
+

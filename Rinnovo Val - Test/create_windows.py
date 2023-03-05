@@ -1,6 +1,5 @@
 import pandas as pd
 import math
-import copy
 import numpy as np
 from elaborate_magnitude import elaborate_magnitude
 

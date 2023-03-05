@@ -14,8 +14,6 @@ def train_regressor(data_folder, metadata, estimators, reg_path):
 
     lin_reg = LinearRegression()
 
-    #TODO: togliere quadre a riga 13
-    #X = np.array(hp_tot_lists).reshape(metadata.shape[0], len(estimators))
     X = np.array(hp_tot_lists)
     y = np.array(metadata['AHA'].values)
 

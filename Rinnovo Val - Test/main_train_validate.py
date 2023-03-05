@@ -3,10 +3,7 @@ import os
 import hashlib
 import itertools
 import pandas as pd
-from sktime.base import BaseEstimator
 from train_best_model import train_best_model
-from save_AHA_stats import save_AHA_stats
-from save_week_stats import save_week_stats
 
 if os.getlogin() == 'david':
     data_folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
@@ -27,8 +24,8 @@ kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean'
 kmedoids = (kmedoids_type, kmedoids_params)
 
 cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
-#cnn_params =  {'activation': ['sigmoid'], 'avg_pool_size': [3], 'batch_size': [16], 'callbacks': [None], 'kernel_size': [7], 'loss': ['mean_squared_error'], 'metrics': [None], 'n_conv_layers': [2], 'n_epochs': [2000], 'optimizer': [None], 'random_state': [None], 'use_bias': [True], 'verbose': [False]}
-cnn_params =  {}
+cnn_params =  {'activation': ['sigmoid'], 'avg_pool_size': [3], 'batch_size': [16], 'callbacks': [None], 'kernel_size': [7], 'loss': ['mean_squared_error'], 'metrics': [None], 'n_conv_layers': [2], 'n_epochs': [2000], 'optimizer': [None], 'random_state': [None], 'use_bias': [True], 'verbose': [False]}
+#cnn_params =  {} #TODO: try togliere vuoto
 cnn = (cnn_type, cnn_params)
 
 boss_type = 'sktime.classification.dictionary_based._boss.BOSSEnsemble'

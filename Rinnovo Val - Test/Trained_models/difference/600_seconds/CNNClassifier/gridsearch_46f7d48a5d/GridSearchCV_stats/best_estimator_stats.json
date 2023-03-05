@@ -1,0 +1,20 @@
+{
+    "Best index": 0,
+    "Best score": 1.0,
+    "Refit time": 58.124165773391724,
+    "Best params": {
+        "activation": "sigmoid",
+        "avg_pool_size": 3,
+        "batch_size": 16,
+        "callbacks": null,
+        "kernel_size": 7,
+        "loss": "mean_squared_error",
+        "metrics": null,
+        "n_conv_layers": 2,
+        "n_epochs": 2000,
+        "optimizer": null,
+        "random_state": null,
+        "use_bias": true,
+        "verbose": false
+    }
+}

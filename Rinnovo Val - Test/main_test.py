@@ -9,16 +9,6 @@ from predict_samples import predict_samples
 import datetime
 import matplotlib
 import matplotlib.pyplot as plt
-import itertools
-
-# Funzione per prendere la media del primo quartile dei massimi valori di una lista
-def first_quartile_of_max(my_list):
-    sorted_list = sorted(my_list, reverse=True)
-    quartile_length = len(sorted_list) // 2
-    if quartile_length == 0:
-        return sorted_list[0]
-    first_quartile = sum(sorted_list[:quartile_length]) / quartile_length
-    return first_quartile
 
 
 if os.getlogin() == 'david':
@@ -36,9 +26,9 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 estimators_specs_list = []
 
 #TODO: controllare che abbiano tutti la stessa window_size
-estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'concat'].iloc[0])
-estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
-#estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
+#estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'concat'].iloc[0])
+#estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
+estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
 
 
 estimators_list = []
@@ -91,7 +81,7 @@ significativity_threshold = 50   # Percentuale di finestre in un blocco che devo
 healthy_percentage = []
 sample_size = estimators_list[0]['window_size']
 
-plot_show = False
+plot_show = True
 '''
 answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
 # If the user enters "yes", show the plot
@@ -127,9 +117,23 @@ for i in range (1, metadata.shape[0]+1):
     axs[0].plot(timestamps, magnitude_D)
     axs[0].plot(timestamps, magnitude_ND)
 
+    ########################## AI PLOT ##########################
+    ai_list = []
+    subList_magD = [magnitude_D[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_D), trend_block_size*sample_size)]
+    subList_magND = [magnitude_ND[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_ND), trend_block_size*sample_size)]
+    for l in range(len(subList_magD)):        
+        if (subList_magD[l].mean() + subList_magND[l].mean()) == 0:
+            ai_list.append(np.nan)
+        else:
+            ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
+
+    axs[1].grid()
+    #axs[1].set_ylim([-101,101])
+    axs[1].plot(ai_list)
+
     #################### GRAFICO DEI PUNTI ####################
     for pred in predictions:
-        axs[1].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=5) 
+        axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=5) 
 
     #################### ANDAMENTO A BLOCCHI ####################
     for pred in predictions:
@@ -144,28 +148,14 @@ for i in range (1, metadata.shape[0]+1):
                 h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
         h_perc_list.append(h_perc_list[-1])
-        axs[2].grid()
-        axs[2].set_ylim([-1,101])
-        axs[2].plot(h_perc_list, drawstyle = 'steps-post')
-    
-    ########################## AI PLOT ##########################
-    ai_list = []
-    subList_magD = [magnitude_D[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_D), trend_block_size*sample_size)]
-    subList_magND = [magnitude_ND[n:n+(trend_block_size*sample_size)] for n in range(0, len(magnitude_ND), trend_block_size*sample_size)]
-    for l in range(len(subList_magD)):        
-        if (subList_magD[l].mean() + subList_magND[l].mean()) == 0:
-            ai_list.append(np.nan)
-        else:
-            ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
-
-    axs[3].grid()
-    axs[3].set_ylim([-101,101])
-    axs[3].plot(ai_list)
+        axs[4].grid()
+        axs[4].set_ylim([-1,101])
+        axs[4].plot(h_perc_list, drawstyle = 'steps-post')
     
     ##################### ANDAMENTO SMOOTH ######################
     h_perc_list_smooth_list = []
-    axs[4].grid()
-    axs[4].set_ylim([-1,101])
+    axs[5].grid()
+    axs[5].set_ylim([-1,101])
     for pred in predictions:
         h_perc_list_smooth = []
         h_perc_list_smooth_significativity = []
@@ -179,14 +169,19 @@ for i in range (1, metadata.shape[0]+1):
             else:
                 h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
-        axs[4].plot(h_perc_list_smooth)
+        axs[5].plot(h_perc_list_smooth)
         h_perc_list_smooth_list.append(h_perc_list_smooth)
-        
-    axs[5].grid()
-    axs[5].set_ylim([-1,101])
-    axs[5].axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='threshold')
-    axs[5].plot(h_perc_list_smooth_significativity)
-    axs[5].legend()
+
+    ##################### SIGNIFICATIVITY PLOT ####################
+
+    axs[3].grid()
+    axs[3].set_ylim([-1,101])
+    axs[3].axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='threshold')
+    axs[3].plot(h_perc_list_smooth_significativity)
+    axs[3].legend()
+
+    ##################### PREDICTED AHA PLOT ####################
+
 
     aha_list_smooth = []
     for elements in zip(*h_perc_list_smooth_list):
@@ -196,9 +191,6 @@ for i in range (1, metadata.shape[0]+1):
             predicted_aha = (regressor.predict(np.array([elements])))
             aha_list_smooth.append(predicted_aha if predicted_aha <= 100 else 100)
 
-
-
-    ##################### PREDICTED AHA PLOT ####################
     conf = 5
     axs[6].grid()
     axs[6].set_ylim([-1,101])

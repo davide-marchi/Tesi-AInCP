@@ -38,9 +38,9 @@ def predict_samples(data_folder, metadata, estimators, patient):
         
         # Fase di predizione
         for es in estimators:
-            print(np.array(es['series']).shape)
+            #print(np.array(es['series']).shape)
             y = es['estimator'].predict(np.array(es['series']))
-            print(es['method'])
+            #print(es['method'])
 
             for index in to_discard:
                 y[index] = -1
