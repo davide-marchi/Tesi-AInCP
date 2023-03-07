@@ -1,5 +1,6 @@
 import hashlib
 import os
+import json
 import pandas as pd
 from sktime.base import BaseEstimator
 from train_regressor import train_regressor
@@ -23,13 +24,11 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sort_values(by=['mean_test_score', 'std_test_score'], ascending=False)
 
-estimators_specs_list = []
-
-#TODO: controllare che abbiano tutti la stessa window_size
+#estimators_specs_list = []
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'concat'].iloc[0])
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
-estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
-
+#estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
+estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.95) & (best_estimators_df['window_size'] == 600)].iterrows()]
 
 estimators_list = []
 model_params_concat = ''
@@ -37,18 +36,19 @@ model_params_concat = ''
 for estimators_specs in estimators_specs_list:
     parent_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/"
     
-    # TODO: Al momento carica tutti i modelli che trova nelle varie gridsearch
     for subdir in os.listdir(parent_dir):
         # Check if the current item is a directory
         if os.path.isdir(os.path.join(parent_dir, subdir)):
+
             # Access the current subdirectory
-            estimator = BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip')
+            with open(os.path.join(parent_dir, subdir) + '/GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
+                grid_search_best_params = json.load(stats_f)
 
-            estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size']})
-
-            print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-            model_params_concat = model_params_concat + str(estimator.get_params())
-
+            if str(grid_search_best_params['Best params']) == estimators_specs['params']:
+                estimator = BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip')
+                estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size']})
+                print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
+                model_params_concat = model_params_concat + str(estimator.get_params())
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
@@ -81,7 +81,7 @@ significativity_threshold = 50   # Percentuale di finestre in un blocco che devo
 healthy_percentage = []
 sample_size = estimators_list[0]['window_size']
 
-plot_show = True
+plot_show = False
 '''
 answer = input("Do you want to see the dashboard for each patient? (yes/no): \n")
 # If the user enters "yes", show the plot

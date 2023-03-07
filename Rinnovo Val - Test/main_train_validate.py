@@ -24,8 +24,8 @@ kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean'
 kmedoids = (kmedoids_type, kmedoids_params)
 
 cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
-cnn_params =  {'activation': ['sigmoid'], 'avg_pool_size': [3], 'batch_size': [16], 'callbacks': [None], 'kernel_size': [7], 'loss': ['mean_squared_error'], 'metrics': [None], 'n_conv_layers': [2], 'n_epochs': [2000], 'optimizer': [None], 'random_state': [None], 'use_bias': [True], 'verbose': [False]}
-#cnn_params =  {} #TODO: try togliere vuoto
+#cnn_params =  {'activation': ['sigmoid'], 'avg_pool_size': [3], 'batch_size': [16], 'callbacks': [None], 'kernel_size': [7], 'loss': ['mean_squared_error'], 'metrics': [None], 'n_conv_layers': [2], 'n_epochs': [2000], 'optimizer': [None], 'random_state': [None], 'use_bias': [True], 'verbose': [False]}
+cnn_params =  {}
 cnn = (cnn_type, cnn_params)
 
 boss_type = 'sktime.classification.dictionary_based._boss.BOSSEnsemble'
@@ -39,7 +39,7 @@ shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'difference', 'ai']                                      # ['concat','difference', 'ai']
 l_window_size =         [600]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmeans, kmedoids, cnn, boss, shapedtw]     # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_gridsearch_specs =    [kmeans, kmedoids, boss, shapedtw]     # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
