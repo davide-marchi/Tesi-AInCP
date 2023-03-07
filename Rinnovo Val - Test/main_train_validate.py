@@ -16,11 +16,11 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
-kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
+kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean'], 'n_clusters': [2]}
 kmedoids = (kmedoids_type, kmedoids_params)
 
 cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
@@ -37,9 +37,9 @@ shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
 shapedtw_params =  {'shape_descriptor_function': ['raw', 'slope']}
 shapedtw = (shapedtw_type, shapedtw_params)
 
-l_method =              ['concat', 'difference', 'ai']                                      # ['concat','difference', 'ai']
+l_method =              ['concat', 'difference', 'ai']              # ['concat','difference', 'ai']
 l_window_size =         [600]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmeans, kmedoids, boss, shapedtw]     # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_gridsearch_specs =    [kmeans]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
@@ -48,9 +48,11 @@ for method, window_size, gridsearch_specs in itertools.product(l_method, l_windo
 
     model_type, model_params = gridsearch_specs
 
+    gridsearch_hash = hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10]
+
     print('Method: ', method, '\nWindow size: ', window_size, '\nModel type: ', model_type, '\nGrid search params: ', model_params)
 
-    gridsearch_folder = "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + hashlib.sha256(json.dumps(model_params, sort_keys=True).encode()).hexdigest()[:10] + "/"
+    gridsearch_folder = "Trained_models/" + method + "/" + str(window_size) + "_seconds/" + model_type.split(".")[-1] + "/" + "gridsearch_" + gridsearch_hash + "/"
 
     if not(os.path.exists(gridsearch_folder + "best_estimator.zip")) or not(os.path.exists(gridsearch_folder + 'GridSearchCV_stats/cv_results.csv')):
 
@@ -61,6 +63,7 @@ for method, window_size, gridsearch_specs in itertools.product(l_method, l_windo
     cv_results['method'] = method
     cv_results['window_size'] = window_size
     cv_results['model_type'] = model_type.split(".")[-1]
+    cv_results['gridsearch_hash'] = gridsearch_hash
 
     estimators_l.append(cv_results)
     best_estimators_l.append(cv_results.iloc[[cv_results['rank_test_score'].argmin()]])

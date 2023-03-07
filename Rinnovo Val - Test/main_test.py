@@ -29,26 +29,22 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
 estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.95) & (best_estimators_df['window_size'] == 600)].iterrows()]
-
+print('Expected estimators: ',len(estimators_specs_list))
 estimators_list = []
 model_params_concat = ''
 
 for estimators_specs in estimators_specs_list:
-    parent_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/"
-    
-    for subdir in os.listdir(parent_dir):
-        # Check if the current item is a directory
-        if os.path.isdir(os.path.join(parent_dir, subdir)):
+    estimator_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
 
-            # Access the current subdirectory
-            with open(os.path.join(parent_dir, subdir) + '/GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
-                grid_search_best_params = json.load(stats_f)
+    with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
+        grid_search_best_params = json.load(stats_f)
 
-            if str(grid_search_best_params['Best params']) == estimators_specs['params']:
-                estimator = BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-                estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size']})
-                print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-                model_params_concat = model_params_concat + str(estimator.get_params())
+    estimator = BaseEstimator().load_from_path(estimator_dir + 'best_estimator.zip')
+    estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size'], 'hemi_cluster': grid_search_best_params['Hemi cluster']})
+    print('Loaded -> ', estimator_dir + 'best_estimator.zip')
+    model_params_concat = model_params_concat + str(estimator.get_params())
+
+print('Loaded estimators: ',len(estimators_list))
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
@@ -133,7 +129,7 @@ for i in range (1, metadata.shape[0]+1):
 
     #################### GRAFICO DEI PUNTI ####################
     for pred in predictions:
-        axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=5) 
+        axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
 
     #################### ANDAMENTO A BLOCCHI ####################
     for pred in predictions:

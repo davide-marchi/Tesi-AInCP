@@ -47,10 +47,7 @@ def predict_samples(data_folder, metadata, estimators, patient):
         for index in to_discard:
             y[index] = -1
 
-        if is_hemiplegic:
-            hemi_cluster = 0 if np.count_nonzero(y == 0) > np.count_nonzero(y == 1) else 1
-        else:
-            hemi_cluster = 1 if np.count_nonzero(y == 0) > np.count_nonzero(y == 1) else 0
+        hemi_cluster = es['hemi_cluster']
 
         cluster_healthy_samples = 0     # Non emiplegici
         cluster_hemiplegic_samples = 0  # Emiplegici

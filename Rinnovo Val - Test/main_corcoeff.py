@@ -23,27 +23,21 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
-estimators_specs_list = [row for index, row in best_estimators_df[best_estimators_df['mean_test_score'] >= 0.95].iterrows()]
+estimators_specs_list = [row for index, row in best_estimators_df[best_estimators_df['mean_test_score'] >= 0.5].iterrows()]
 
 estimators_list = []
 model_params_concat = ''
 
 for estimators_specs in estimators_specs_list:
-    parent_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/"
-    
-    for subdir in os.listdir(parent_dir):
-        # Check if the current item is a directory
-        if os.path.isdir(os.path.join(parent_dir, subdir)):
+    estimator_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
 
-            # Access the current subdirectory
-            with open(os.path.join(parent_dir, subdir) + '/GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
-                grid_search_best_params = json.load(stats_f)
+    with open(estimator_dir + 'GridSearchCV_stats/best_estimator_stats.json', "r") as stats_f:
+        grid_search_best_params = json.load(stats_f)
 
-            if str(grid_search_best_params['Best params']) == estimators_specs['params']:
-                estimator = BaseEstimator().load_from_path(os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-                estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size']})
-                print('Loaded -> ', os.path.join(parent_dir, subdir) + '/best_estimator.zip')
-                model_params_concat = model_params_concat + str(estimator.get_params())
+    estimator = BaseEstimator().load_from_path(estimator_dir + 'best_estimator.zip')
+    estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size'], 'hemi_cluster': grid_search_best_params['Hemi cluster']})
+    print('Loaded -> ', estimator_dir + 'best_estimator.zip')
+    model_params_concat = model_params_concat + str(estimator.get_params())
 
 reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
 

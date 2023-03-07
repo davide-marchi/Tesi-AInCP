@@ -2,6 +2,7 @@ import os
 import json
 import importlib
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
@@ -25,7 +26,7 @@ def train_best_model(data_folder, gridsearch_folder, model_type, model_params, m
     module_name, class_name = model_type.rsplit(".", 1)
     model = getattr(importlib.import_module(module_name), class_name)()
 
-    X, _, _, y = create_windows(data_folder, method, window_size)
+    X, y_AHA, _, y = create_windows(data_folder, method, window_size)
  
     param_grid = model_params
     #                                                             dobbiamo fixare il seed?
@@ -34,12 +35,18 @@ def train_best_model(data_folder, gridsearch_folder, model_type, model_params, m
 
     estimator = parameter_tuning_method.best_estimator_
 
+    if issubclass(type(estimator), BaseClassifier):
+        hemi_cluster = 1
+    else:    
+        y_pred = estimator.predict(X)
+        hemi_cluster = 1 if np.mean([x for x, y in zip(y_AHA, y_pred) if y == 0]) > np.mean([x for x, y in zip(y_AHA, y_pred) if y == 1]) else 0
+
     stats_folder = gridsearch_folder + 'GridSearchCV_stats/'
     os.makedirs(stats_folder, exist_ok = True)
     pd.DataFrame(parameter_tuning_method.cv_results_).to_csv(stats_folder + "cv_results.csv")
     
     with open(stats_folder + 'best_estimator_stats.json', 'w') as f:
-        f.write(json.dumps({"Best index":int(parameter_tuning_method.best_index_), "Best score":parameter_tuning_method.best_score_, "Refit time":parameter_tuning_method.refit_time_, "Best params": parameter_tuning_method.best_params_}, indent=4))
+        f.write(json.dumps({"Best index":int(parameter_tuning_method.best_index_), "Best score":parameter_tuning_method.best_score_, "Refit time":parameter_tuning_method.refit_time_, "Best params": parameter_tuning_method.best_params_, "Hemi cluster": hemi_cluster}, indent=4))
 
     estimator.save(gridsearch_folder + "best_estimator")
     print('Best estimator saved\n\n------------------------------------------------\n')
