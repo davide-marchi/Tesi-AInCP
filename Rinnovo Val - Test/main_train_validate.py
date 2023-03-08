@@ -20,7 +20,7 @@ kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', '
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
-kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean'], 'n_clusters': [2]}
+kmedoids_params = {'init_algorithm': ['forgy', 'random'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
 kmedoids = (kmedoids_type, kmedoids_params)
 
 cnn_type = 'sktime.classification.deep_learning.cnn.CNNClassifier'
@@ -39,7 +39,7 @@ shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'difference', 'ai']              # ['concat','difference', 'ai']
 l_window_size =         [600]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmeans]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_gridsearch_specs =    [kmedoids, boss]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
