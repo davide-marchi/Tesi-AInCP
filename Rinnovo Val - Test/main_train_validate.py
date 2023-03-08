@@ -16,7 +16,7 @@ else:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 kmeans_type = 'sktime.clustering.k_means.TimeSeriesKMeans'
-kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean'], 'n_clusters': [2]}
+kmeans_params =  {'averaging_method': ['mean'], 'init_algorithm': ['kmeans++', 'forgy'], 'metric': ['euclidean', 'dtw'], 'n_clusters': [2]}
 kmeans = (kmeans_type, kmeans_params)
 
 kmedoids_type = 'sktime.clustering.k_medoids.TimeSeriesKMedoids'
@@ -39,7 +39,7 @@ shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'difference', 'ai']              # ['concat','difference', 'ai']
 l_window_size =         [600]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmedoids, boss]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_gridsearch_specs =    [kmedoids, boss, kmeans, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []

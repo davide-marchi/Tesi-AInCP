@@ -1,9 +1,12 @@
+import pandas as pd
 import numpy as np
+from sklearn.metrics import r2_score
 
-y_AHA = [1,2,3,4,5]
-y_pred = [1,1,0,0,0]
+df = pd.read_csv('Rinnovo Val - Test/week_stats/predictions_dataframe.csv')
 
-hemi_cluster = 1 if np.mean([x for x, y in zip(y_AHA, y_pred) if y == 0]) > np.mean([x for x, y in zip(y_AHA, y_pred) if y == 1]) else 0
-
-
-print(hemi_cluster)
+print(df['predicted_aha'].values)
+print(type(df['predicted_aha'].values))
+print(df['AHA'].values)
+print(type(df['AHA'].values))
+print(np.corrcoef(df['predicted_aha'], df['AHA']))
+print(r2_score(df['AHA'].values, df['predicted_aha'].values))

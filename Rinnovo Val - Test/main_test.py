@@ -11,6 +11,10 @@ import datetime
 import matplotlib
 import matplotlib.pyplot as plt
 
+import warnings 
+
+warnings.filterwarnings("ignore")
+
 
 if os.getlogin() == 'david':
     data_folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
@@ -28,7 +32,7 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'concat'].iloc[0])
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
-estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.95) & (best_estimators_df['window_size'] == 600)].iterrows()]
+estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.975) & (best_estimators_df['window_size'] == 600)].iterrows()]
 print('Expected estimators: ',len(estimators_specs_list))
 estimators_list = []
 model_params_concat = ''
@@ -53,9 +57,11 @@ reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode
 
 if not(os.path.exists(reg_path)):
     #Dobbiamo allenare il regressore
+    print('INIZIO TRAINING REGRESSORE')
     train_regressor(data_folder, metadata, estimators_list, reg_path)
 
 regressor = jl.load(reg_path)
+print('REGRESSOR READY')
 
 stats_folder = 'week_stats'
 os.makedirs(stats_folder, exist_ok=True)
@@ -73,7 +79,7 @@ else:
     timestamps = jl.load('timestamps_list')
 
 trend_block_size = 36            # Numero di finestre (da 600 secondi) raggruppate in un blocco
-significativity_threshold = 50   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+significativity_threshold = 75   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 healthy_percentage = []
 sample_size = estimators_list[0]['window_size']
 
@@ -90,7 +96,7 @@ for i in range (1, metadata.shape[0]+1):
     predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
     healthy_percentage.append(hp_tot_list)
     real_aha = metadata['AHA'].iloc[i-1]
-    predicted_aha = regressor.predict(np.array([hp_tot_list]))
+    predicted_aha = regressor.predict(np.array([hp_tot_list]))[0]
     predicted_aha = 100 if predicted_aha > 100 else predicted_aha
     predicted_aha_list.append(predicted_aha)
 
@@ -184,8 +190,8 @@ for i in range (1, metadata.shape[0]+1):
         if np.isnan(elements[0]):
             aha_list_smooth.append(np.nan)
         else:
-            predicted_aha = (regressor.predict(np.array([elements])))
-            aha_list_smooth.append(predicted_aha if predicted_aha <= 100 else 100)
+            predicted_window_aha = (regressor.predict(np.array([elements])))
+            aha_list_smooth.append(predicted_window_aha if predicted_window_aha <= 100 else 100)
 
     conf = 5
     axs[6].grid()
