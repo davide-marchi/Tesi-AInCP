@@ -38,8 +38,8 @@ shapedtw_params =  {'shape_descriptor_function': ['raw', 'slope']}
 shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'difference', 'ai']              # ['concat','difference', 'ai']
-l_window_size =         [600]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmedoids, boss, kmeans, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_window_size =         [900]                                       # [300, 600, 900]
+l_gridsearch_specs =    [kmedoids, boss]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []
