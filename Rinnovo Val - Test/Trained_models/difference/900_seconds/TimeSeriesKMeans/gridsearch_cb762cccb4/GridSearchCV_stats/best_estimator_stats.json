@@ -1,0 +1,12 @@
+{
+    "Best index": 1,
+    "Best score": 1.0,
+    "Refit time": 57.7486093044281,
+    "Best params": {
+        "averaging_method": "mean",
+        "init_algorithm": "kmeans++",
+        "metric": "dtw",
+        "n_clusters": 2
+    },
+    "Hemi cluster": 1
+}
