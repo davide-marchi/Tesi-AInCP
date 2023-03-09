@@ -35,7 +35,7 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.975) & (best_estimators_df['window_size'] == 600)].iterrows()]
 print('Expected estimators: ',len(estimators_specs_list))
 estimators_list = []
-model_params_concat = ''
+model_id_concat = ''
 
 for estimators_specs in estimators_specs_list:
     estimator_dir = "Trained_models/" + estimators_specs['method'] + "/" + str(estimators_specs['window_size']) + "_seconds/" + estimators_specs['model_type'].split(".")[-1] + "/gridsearch_" + estimators_specs['gridsearch_hash']  + "/"
@@ -46,14 +46,14 @@ for estimators_specs in estimators_specs_list:
     estimator = BaseEstimator().load_from_path(estimator_dir + 'best_estimator.zip')
     estimators_list.append({'estimator': estimator, 'method': estimators_specs['method'], 'window_size': estimators_specs['window_size'], 'hemi_cluster': grid_search_best_params['Hemi cluster']})
     print('Loaded -> ', estimator_dir + 'best_estimator.zip')
-    model_params_concat = model_params_concat + str(estimator.get_params())
+    model_id_concat = model_id_concat + estimator_dir
 
 print('Loaded estimators: ',len(estimators_list))
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
-reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_params_concat).encode()).hexdigest()[:10])
+reg_path = 'Regressors/regressor_'+ (hashlib.sha256((model_id_concat).encode()).hexdigest()[:10])
 
 if not(os.path.exists(reg_path)):
     #Dobbiamo allenare il regressore
