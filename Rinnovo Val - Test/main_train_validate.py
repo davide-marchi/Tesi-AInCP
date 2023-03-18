@@ -5,6 +5,10 @@ import itertools
 import pandas as pd
 from train_best_model import train_best_model
 
+import warnings 
+
+warnings.filterwarnings("ignore")
+
 if os.getlogin() == 'david':
     data_folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
 elif os.getlogin() == 'giord':
@@ -30,16 +34,16 @@ cnn = (cnn_type, cnn_params)
 
 boss_type = 'sktime.classification.dictionary_based._boss.BOSSEnsemble'
 #boss_params = {'alphabet_size': [4], 'feature_selection': ['none'], 'max_ensemble_size': [500], 'max_win_len_prop': [1], 'min_window': [10], 'n_jobs': [1], 'random_state': [None], 'save_train_predictions': [False], 'threshold': [0.92], 'typed_dict': [True], 'use_boss_distance': [True]}
-boss_params = {'feature_selection': ['chi2']}
+boss_params = {'feature_selection': ['chi2', 'none']}
 boss = (boss_type, boss_params)
 
 shapedtw_type = 'sktime.classification.distance_based._shape_dtw.ShapeDTW'
-shapedtw_params =  {'shape_descriptor_function': ['raw', 'slope']}
+shapedtw_params =  {'shape_descriptor_function': ['raw', 'paa']}
 shapedtw = (shapedtw_type, shapedtw_params)
 
 l_method =              ['concat', 'difference', 'ai']              # ['concat','difference', 'ai']
-l_window_size =         [600, 900]                                       # [300, 600, 900]
-l_gridsearch_specs =    [kmedoids, boss, kmeans, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
+l_window_size =         [300]                                       # [300, 600, 900]
+l_gridsearch_specs =    [kmeans, kmedoids, boss, shapedtw]          # [kmeans, kmedoids, cnn, boss, shapedtw]
 
 estimators_l = []
 best_estimators_l = []

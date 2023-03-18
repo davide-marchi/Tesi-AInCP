@@ -1,0 +1,11 @@
+{
+    "Best index": 0,
+    "Best score": 0.9550153407268617,
+    "Refit time": 0.4380004405975342,
+    "Best params": {
+        "init_algorithm": "forgy",
+        "metric": "euclidean",
+        "n_clusters": 2
+    },
+    "Hemi cluster": 1
+}

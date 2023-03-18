@@ -7,6 +7,7 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sktime.classification.base import BaseClassifier
+from sktime.clustering.base import BaseClusterer
 from sklearn.metrics import f1_score
 from create_windows import create_windows
 
@@ -35,11 +36,18 @@ def train_best_model(data_folder, gridsearch_folder, model_type, model_params, m
 
     estimator = parameter_tuning_method.best_estimator_
 
-    if issubclass(type(estimator), BaseClassifier):
-        hemi_cluster = 1
-    else:    
-        y_pred = estimator.predict(X)
-        hemi_cluster = 1 if np.mean([x for x, y in zip(y_AHA, y_pred) if y == 0]) > np.mean([x for x, y in zip(y_AHA, y_pred) if y == 1]) else 0
+    hemi_cluster = 1
+    y_pred = estimator.predict(X)
+    inverted_y_pred = [1 if item == 0 else 0 for item in y_pred]
+
+    if issubclass(type(estimator), BaseClusterer) and f1_score(y, y_pred, average='weighted') < f1_score(y, inverted_y_pred, average='weighted'):
+        hemi_cluster = 0
+
+    # print('y = ', y)
+    # print('y_pred = ', y_pred)
+    # print('f1_score = ', f1_score(y, y_pred, average='weighted'))
+    # print('f1_score (inverted) = ', f1_score(y, inverted_y_pred, average='weighted'))
+    # print('hemi_cluster = ', hemi_cluster, ' (1 = non invertito)')
 
     stats_folder = gridsearch_folder + 'GridSearchCV_stats/'
     os.makedirs(stats_folder, exist_ok = True)
