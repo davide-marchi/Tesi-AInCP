@@ -79,10 +79,10 @@ if not os.path.exists('timestamps_list'):
 else:
     timestamps = jl.load('timestamps_list')
 
-trend_block_size = 36            # Numero di finestre (da 600 secondi) raggruppate in un blocco
-significativity_threshold = 75   # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
-healthy_percentage = []
 sample_size = estimators_list[0]['window_size']
+
+trend_block_size = (60 * 60 * 6) / sample_size  # Numero di finestre (da 300/600/900 secondi) raggruppate in un blocco da 6 ore
+significativity_threshold = 50                  # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
 plot_show = False
 '''
@@ -91,6 +91,8 @@ answer = input("Do you want to see the dashboard for each patient? (yes/no): \n"
 if answer.lower() == "yes":
     plot_show = True
 '''
+
+healthy_percentage = []
 predicted_aha_list = []
 
 for i in range (1, metadata.shape[0]+1):
