@@ -81,8 +81,8 @@ else:
 
 sample_size = estimators_list[0]['window_size']
 
-trend_block_size = (60 * 60 * 6) / sample_size  # Numero di finestre (da 300/600/900 secondi) raggruppate in un blocco da 6 ore
-significativity_threshold = 50                  # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
+trend_block_size = int((60 * 60 * 6) / sample_size)  # Numero di finestre (da 300/600/900 secondi) raggruppate in un blocco da 6 ore
+significativity_threshold = 75                  # Percentuale di finestre in un blocco che devono essere prese per renderlo significativo
 
 plot_show = False
 '''
