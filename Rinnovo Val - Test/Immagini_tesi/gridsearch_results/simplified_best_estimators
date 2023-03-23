@@ -1,0 +1,13 @@
+,window_size,method,model_type,mean_test_score,std_test_score
+9,300,ai,TimeSeriesKMedoids,0.955,0.024
+8,300,ai,TimeSeriesKMeans,0.95,0.023
+2,300,concat,BOSSEnsemble,0.943,0.053
+4,300,difference,TimeSeriesKMeans,0.94,0.043
+7,300,difference,ShapeDTW,0.939,0.047
+10,300,ai,BOSSEnsemble,0.938,0.043
+5,300,difference,TimeSeriesKMedoids,0.933,0.037
+11,300,ai,ShapeDTW,0.933,0.026
+6,300,difference,BOSSEnsemble,0.928,0.045
+3,300,concat,ShapeDTW,0.809,0.045
+0,300,concat,TimeSeriesKMeans,0.732,0.184
+1,300,concat,TimeSeriesKMedoids,0.67,0.096
