@@ -11,7 +11,7 @@ import re
 #per finestre da 900: 4 cluster
 
 
-root_dir = 'Blocco 1/60_patients/KMeans'
+root_dir = 'Blocco 1/concat_version/60_patients/KMeans'
 
 window = '900'
 spec = 'euclidean'
@@ -33,7 +33,9 @@ for dirname in os.listdir("."):
         
 print(x)
 print(y)    
-        
+
 plt.scatter(x,y)
+plt.xlabel("numero di clusters")
+plt.ylabel("inertia")
 plt.show()
 
