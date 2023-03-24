@@ -32,13 +32,44 @@ print(type(predictions_dataframe['AHA'][0]))
 print(type(predictions_dataframe['CPI'][0]))
 
 
-print(predictions_dataframe)
+predictions_dataframe['CPI'] = predictions_dataframe['CPI'].round(3)
 
-print((np.corrcoef(predictions_dataframe['CPI'].values, predictions_dataframe['AHA'].values))[0][1])
+#predictions_dataframe['std_test_score'] = best_estimators_df['std_test_score'].round(3)
 
-plt.scatter(predictions_dataframe['AHA'].values, predictions_dataframe['CPI'].values, c = predictions_dataframe['MACS'].values)
-plt.xlabel('AHA')
-plt.ylabel('CPI')
+print(predictions_dataframe[['subject', 'MACS', 'AHA', 'CPI']])
+
+print('corrcoef CPI-AHA = ', (np.corrcoef(predictions_dataframe['CPI'].values, predictions_dataframe['AHA'].values))[0][1])
+print('corrcoef AI_week-AHA = ', (np.corrcoef(predictions_dataframe['AI_week'].values, predictions_dataframe['AHA'].values))[0][1])
+
+
+
+
+
+
+#plt.scatter(predictions_dataframe['AHA'].values, predictions_dataframe['CPI'].values, c = predictions_dataframe['MACS'].values)
+
+scatter_x = np.array(predictions_dataframe['CPI'].values)
+scatter_y = np.array(predictions_dataframe['AHA'].values)
+group = np.array(predictions_dataframe['MACS'].values)
+cdict = {0:'green', 1: 'gold', 2: 'orange', 3: 'red'}
+
+#print(scatter_x)
+#print(scatter_y)
+#print(group)
+
+fig, ax = plt.subplots()
+ax.grid()
+for g in np.unique(group):
+    ix = np.where(group == g)
+    ax.scatter(scatter_x[ix], scatter_y[ix], c = cdict[g], label = 'MACS ' + str(g), s = 50)
+ax.legend()
+
+plt.xlabel('CPI')
+plt.ylabel('AHA')
+plt.savefig('Immagini_tesi/CPI/scatter_AHA_CPI_best300.png', dpi = 500)
+
+#plt.xlabel('AHA')
+#plt.ylabel('CPI')
 #plt.legend(['a'], ['b'], ['c'])
-plt.show()
-plt.close()
+#plt.show()
+#plt.close()
