@@ -10,3 +10,5 @@ print(df['AHA'].values)
 print(type(df['AHA'].values))
 print(np.corrcoef(df['predicted_aha'], df['AHA']))
 print(r2_score(df['AHA'].values, df['predicted_aha'].values))
+
+#kmeans ai 600 euclidean : 0.82

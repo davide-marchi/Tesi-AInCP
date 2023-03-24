@@ -33,7 +33,7 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'ai'].iloc[0])
 #estimators_specs_list.append(best_estimators_df[best_estimators_df['method'] == 'difference'].iloc[0])
 #estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.975) & (best_estimators_df['window_size'] == 600)].iterrows()]
-estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.938) & (best_estimators_df['window_size'] == 300)].iterrows()]
+estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] == 1) & (best_estimators_df['method'] == 'difference')].iterrows()]
 print('Expected estimators: ',len(estimators_specs_list))
 estimators_list = []
 model_id_concat = ''
