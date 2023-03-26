@@ -10,6 +10,7 @@ from predict_samples import predict_samples
 import datetime
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 import warnings 
 
@@ -35,7 +36,8 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 #estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.975) & (best_estimators_df['window_size'] == 600)].iterrows()]
 #estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] == 1) & (best_estimators_df['method'] == 'difference')].iterrows()]
 
-estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.954) & (best_estimators_df['window_size'] == 300)].iterrows()]
+#estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.954) & (best_estimators_df['window_size'] == 300)].iterrows()]
+estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.939) & (best_estimators_df['window_size'] == 300)].iterrows()]
 
 
 print('Expected estimators: ',len(estimators_specs_list))
@@ -99,6 +101,8 @@ if answer.lower() == "yes":
 healthy_percentage = []
 predicted_aha_list = []
 
+
+
 for i in [24, 35]:
     predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
     healthy_percentage.append(hp_tot_list)
@@ -115,16 +119,29 @@ for i in [24, 35]:
 
     #################### ANDAMENTO WEEK GENERALE ####################
 
+    plt.grid()
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+    plt.plot(timestamps, magnitude_D)
+    plt.plot(timestamps, magnitude_ND)
+    plt.xlabel("Orario")
+    plt.ylabel("Magnitudo")
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_mag.png', dpi = 500)
+    plt.close()
+
     # Fase di plotting
-    fig, axs = plt.subplots(7)
-    fig.suptitle('Patient ' + str(i) + ' week trend, AHA: ' + str(real_aha))
-    #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
-    #axs[0].xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(12))
-    #axs[0].xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(n=6))
-    #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%H-%M'))
-    axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H:%M'))
-    axs[0].plot(timestamps, magnitude_D)
-    axs[0].plot(timestamps, magnitude_ND)
+    #fig, axs = plt.subplots(7)
+    #fig.suptitle('Patient ' + str(i) + ' week trend, AHA: ' + str(real_aha))
+        #axs[0].xaxis.set_minor_locator(matplotlib.dates.HourLocator())
+        #axs[0].xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(12))
+        #axs[0].xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(n=6))
+        #axs[0].xaxis.set_minor_formatter(matplotlib.dates.DateFormatter('%H-%M'))
+    #axs[0].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%d-%H:%M'))
+    #axs[0].plot(timestamps, magnitude_D)
+    #axs[0].plot(timestamps, magnitude_ND)
+
 
     ########################## AI PLOT ##########################
     ai_list = []
@@ -136,15 +153,27 @@ for i in [24, 35]:
         else:
             ai_list.append(((subList_magD[l].mean() - subList_magND[l].mean()) / (subList_magD[l].mean() + subList_magND[l].mean())) * 100)
 
-    axs[1].grid()
+    #axs[1].grid()
     #axs[1].set_ylim([-101,101])
-    axs[1].plot(ai_list)
+    #axs[1].plot(ai_list)
+
+
+
 
     #################### GRAFICO DEI PUNTI ####################
     for pred in predictions:
-        axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
+        #axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
+        plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1)
+
+    plt.xlabel("Sample")
+    plt.ylabel("Classificazione")
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_samples.png', dpi = 500)
+    plt.close()
 
     #################### ANDAMENTO A BLOCCHI ####################
+
     for pred in predictions:
         h_perc_list = []
         subList = [pred[n:n+trend_block_size] for n in range(0, len(pred), trend_block_size)]
@@ -156,15 +185,28 @@ for i in [24, 35]:
             else:
                 h_perc_list.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
-        h_perc_list.append(h_perc_list[-1])
-        axs[4].grid()
-        axs[4].set_ylim([-1,101])
-        axs[4].plot(h_perc_list, drawstyle = 'steps-post')
+        #h_perc_list.append(h_perc_list[-1]) PER LA LINEA ORIZZONTALE FINALE
+        #axs[4].grid()
+        #axs[4].set_ylim([-1,101])
+        #axs[4].plot(h_perc_list, drawstyle = 'steps-post')
+        plt.grid()
+        ax = plt.gca()
+        ax.set_ylim([-1,101])
+        ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+        plt.plot(timestamps[::21600], h_perc_list, drawstyle = 'steps-post')
+        
+    plt.xlabel("Orario")
+    plt.ylabel("CPI")
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_CPIblocks.png', dpi = 500)
+    plt.close()
     
     ##################### ANDAMENTO SMOOTH ######################
     h_perc_list_smooth_list = []
-    axs[5].grid()
-    axs[5].set_ylim([-1,101])
+    plt.grid()
+    ax = plt.gca()
+    ax.set_ylim([-1,101])
     for pred in predictions:
         h_perc_list_smooth = []
         h_perc_list_smooth_significativity = []
@@ -178,16 +220,41 @@ for i in [24, 35]:
             else:
                 h_perc_list_smooth.append((n_healthy / (n_hemi + n_healthy)) * 100)
 
-        axs[5].plot(h_perc_list_smooth)
+        #axs[5].plot(h_perc_list_smooth)
+
         h_perc_list_smooth_list.append(h_perc_list_smooth)
+
+        plot_h_perc_list_smooth = [np.nan] * (6*12-1) + h_perc_list_smooth
+
+        ax = plt.gca()
+        ax.set_ylim([-1,101])
+        ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+        plt.plot(timestamps[::300], plot_h_perc_list_smooth)
+
+
+    plt.xlabel("Orario")
+    plt.ylabel("CPI")
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_CPIsmooth.png', dpi = 500)
+    plt.close()
 
     ##################### SIGNIFICATIVITY PLOT ####################
 
-    axs[3].grid()
-    axs[3].set_ylim([-1,101])
-    axs[3].axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='threshold')
-    axs[3].plot(h_perc_list_smooth_significativity)
-    axs[3].legend()
+    plt.grid()
+    ax = plt.gca()
+    ax.set_ylim([-1,101])
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+    plt.axhline(y = significativity_threshold, color = 'r', linestyle = '-', label='Soglia')
+    plot_h_perc_list_smooth_significativity = [np.nan] * (6*12-1) + h_perc_list_smooth_significativity
+    plt.plot(timestamps[::300], plot_h_perc_list_smooth_significativity)
+    plt.legend()
+    plt.xlabel("Orario")
+    plt.ylabel("Significatività")
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_sig.png', dpi = 500)
+    plt.close()
 
     ##################### PREDICTED AHA PLOT ####################
 
@@ -201,19 +268,27 @@ for i in [24, 35]:
             aha_list_smooth.append(predicted_window_aha if predicted_window_aha <= 100 else 100)
 
     conf = 5
-    axs[6].grid()
-    axs[6].set_ylim([-1,101])
-    axs[6].axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='aha')
-    axs[6].plot(aha_list_smooth, c = 'grey')
-    axs[6].plot([x if real_aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
-    axs[6].plot([x if real_aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
-    axs[6].plot([x if x <= real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
-    axs[6].plot([x if x <= real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
-    axs[6].legend()
+    plt.grid()
+    ax = plt.gca()
+    ax.set_ylim([-1,101])
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+    plt.axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='AHA')
+    plt.xlabel("Orario")
+    plt.ylabel("Home-AHA")
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + aha_list_smooth, c = 'grey')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x <= real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x <= real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
+    plt.legend()
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+    plt.close()
     #############################################################
     
-    plt.savefig(stats_folder + '/subject_' +str(i)+'.png', dpi = 500)
-    
+    #plt.savefig(stats_folder + '/subject_' +str(i)+'.png', dpi = 500)
+
     if(plot_show == True):
         plt.show() 
     plt.close()
