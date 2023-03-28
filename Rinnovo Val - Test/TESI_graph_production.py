@@ -26,7 +26,9 @@ os.chdir("./Rinnovo Val - Test")
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 
-df = pd.read_csv(data_folder + 'data/1_AHA_1sec.csv')
+subject = 35
+
+df = pd.read_csv(data_folder + 'data/'+ str(subject) + '_AHA_1sec.csv')
 
 # Calculating magnitude
 magnitude_D = np.sqrt(np.square(df['x_D']) + np.square(df['y_D']) + np.square(df['z_D']))
@@ -44,23 +46,31 @@ plt.plot(magnitude_ND, label = 'Mano non dominante')
 plt.xlabel("Secondi")
 plt.ylabel("Magnitudo")
 plt.legend(loc='best')
-plt.savefig('Immagini_tesi/Preprocessing/mag_D_mag_ND.png', dpi = 500)
+plt.gcf().set_size_inches(8, 2)
+plt.tight_layout()
+plt.savefig('Immagini_tesi/Preprocessing/AHA_' + str(subject) +'_mag_D_mag_ND.png', dpi = 500)
 plt.close()
 
 plt.plot(elaborate_magnitude('concat', magnitude_D, magnitude_ND))
 plt.xlabel("Secondi")
 plt.ylabel("Magnitudo")
-plt.savefig('Immagini_tesi/Preprocessing/Concatenazione.png', dpi = 500)
+plt.gcf().set_size_inches(8, 2)
+plt.tight_layout()
+plt.savefig('Immagini_tesi/Preprocessing/AHA_' + str(subject) +'_Concatenazione.png', dpi = 500)
 plt.close()
 
 plt.plot(elaborate_magnitude('difference', magnitude_D, magnitude_ND))
 plt.xlabel("Secondi")
 plt.ylabel("Differenza tra magnitudo")
-plt.savefig('Immagini_tesi/Preprocessing/Difference.png', dpi = 500)
+plt.gcf().set_size_inches(8, 2)
+plt.tight_layout()
+plt.savefig('Immagini_tesi/Preprocessing/AHA_' + str(subject) +'_Difference.png', dpi = 500)
 plt.close()
 
 plt.plot(elaborate_magnitude('ai', magnitude_D, magnitude_ND))
 plt.xlabel("Secondi")
 plt.ylabel("Asimmetry Index")
-plt.savefig('Immagini_tesi/Preprocessing/AsimmetryIndex.png', dpi = 500)
+plt.gcf().set_size_inches(8, 2)
+plt.tight_layout()
+plt.savefig('Immagini_tesi/Preprocessing/AHA_' + str(subject) +'_AsimmetryIndex.png', dpi = 500)
 plt.close()

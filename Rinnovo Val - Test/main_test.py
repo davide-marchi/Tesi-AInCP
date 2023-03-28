@@ -205,10 +205,10 @@ for i in range (1, metadata.shape[0]+1):
     axs[6].set_ylim([-1,101])
     axs[6].axhline(y = real_aha, color = 'b', linestyle = '--', linewidth= 1, label='aha')
     axs[6].plot(aha_list_smooth, c = 'grey')
-    axs[6].plot([x if real_aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
-    axs[6].plot([x if real_aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
-    axs[6].plot([x if x <= real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
-    axs[6].plot([x if x <= real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
+    axs[6].plot([x if real_aha + conf < x else np.nan for x in aha_list_smooth], c ='green')
+    axs[6].plot([x if real_aha + 2*conf < x else np.nan for x in aha_list_smooth], c ='darkgreen')
+    axs[6].plot([x if x < real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
+    axs[6].plot([x if x < real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
     axs[6].legend()
     #############################################################
     

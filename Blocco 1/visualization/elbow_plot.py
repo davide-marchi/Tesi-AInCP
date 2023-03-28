@@ -35,7 +35,11 @@ print(x)
 print(y)    
 
 plt.scatter(x,y)
-plt.xlabel("numero di clusters")
-plt.ylabel("inertia")
-plt.show()
+plt.xlabel("Numero di clusters")
+plt.ylabel("Inerzia")
+
+#plt.gcf().set_size_inches(8, 2)
+plt.tight_layout()
+plt.savefig('Elbow_plot.png', dpi = 500)
+plt.close()
 

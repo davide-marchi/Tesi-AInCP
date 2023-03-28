@@ -103,7 +103,7 @@ predicted_aha_list = []
 
 
 
-for i in [24, 35]:
+for i in [25]:
     predictions, hp_tot_list, magnitude_D, magnitude_ND = predict_samples(data_folder, metadata, estimators_list, i)
     healthy_percentage.append(hp_tot_list)
     real_aha = metadata['AHA'].iloc[i-1]
@@ -119,6 +119,7 @@ for i in [24, 35]:
 
     #################### ANDAMENTO WEEK GENERALE ####################
 
+    #plt.title('Andamento magnitudo')
     plt.grid()
     ax = plt.gca()
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
@@ -128,7 +129,7 @@ for i in [24, 35]:
     plt.ylabel("Magnitudo")
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_mag.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_mag.png', dpi = 500)
     plt.close()
 
     # Fase di plotting
@@ -157,7 +158,17 @@ for i in [24, 35]:
     #axs[1].set_ylim([-101,101])
     #axs[1].plot(ai_list)
 
-
+    #plt.title('Andamento AI')
+    plt.xlabel("Orario")
+    plt.ylabel("Asimmetry Index")
+    plt.grid()
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
+    plt.plot(timestamps[::21600], ai_list)
+    plt.gcf().set_size_inches(8, 2)
+    plt.tight_layout()
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_AI.png', dpi = 500)
+    plt.close()
 
 
     #################### GRAFICO DEI PUNTI ####################
@@ -165,11 +176,12 @@ for i in [24, 35]:
         #axs[2].scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1) 
         plt.scatter(list(range(len(pred))), pred, c=pred, cmap='brg', s=1)
 
+    #plt.title('Grafico delle predizioni')
     plt.xlabel("Sample")
     plt.ylabel("Classificazione")
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_samples.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_samples.png', dpi = 500)
     plt.close()
 
     #################### ANDAMENTO A BLOCCHI ####################
@@ -195,15 +207,17 @@ for i in [24, 35]:
         ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H:%M'))
         plt.plot(timestamps[::21600], h_perc_list, drawstyle = 'steps-post')
         
+    #plt.title('Andamento CPI su finestre disgiunte')
     plt.xlabel("Orario")
     plt.ylabel("CPI")
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_CPIblocks.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIblocks.png', dpi = 500)
     plt.close()
     
     ##################### ANDAMENTO SMOOTH ######################
     h_perc_list_smooth_list = []
+    #plt.title('Andamento CPI su finestra scorrevole')
     plt.grid()
     ax = plt.gca()
     ax.set_ylim([-1,101])
@@ -236,11 +250,12 @@ for i in [24, 35]:
     plt.ylabel("CPI")
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_CPIsmooth.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_CPIsmooth.png', dpi = 500)
     plt.close()
 
     ##################### SIGNIFICATIVITY PLOT ####################
 
+    #plt.title('Grafico della significatività')
     plt.grid()
     ax = plt.gca()
     ax.set_ylim([-1,101])
@@ -253,7 +268,7 @@ for i in [24, 35]:
     plt.ylabel("Significatività")
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_sig.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_sig.png', dpi = 500)
     plt.close()
 
     ##################### PREDICTED AHA PLOT ####################
@@ -267,6 +282,7 @@ for i in [24, 35]:
             predicted_window_aha = (regressor.predict(np.array([elements])))
             aha_list_smooth.append(predicted_window_aha if predicted_window_aha <= 100 else 100)
 
+    #plt.title('Andamento Home-AHA')
     conf = 5
     plt.grid()
     ax = plt.gca()
@@ -276,14 +292,14 @@ for i in [24, 35]:
     plt.xlabel("Orario")
     plt.ylabel("Home-AHA")
     plt.plot(timestamps[::300], [np.nan] * (6*12-1) + aha_list_smooth, c = 'grey')
-    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + conf <= x else np.nan for x in aha_list_smooth], c ='green')
-    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + 2*conf <= x else np.nan for x in aha_list_smooth], c ='darkgreen')
-    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x <= real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
-    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x <= real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + conf < x else np.nan for x in aha_list_smooth], c ='green')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if real_aha + 2*conf < x else np.nan for x in aha_list_smooth], c ='darkgreen')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x < real_aha - conf else np.nan for x in aha_list_smooth], c ='orange')
+    plt.plot(timestamps[::300], [np.nan] * (6*12-1) + [x if x < real_aha - 2*conf else np.nan for x in aha_list_smooth], c ='darkorange')
     plt.legend()
     plt.gcf().set_size_inches(8, 2)
     plt.tight_layout()
-    plt.savefig(stats_folder + '/subject_' +str(i)+'_Home-AHA.png', dpi = 500)
+    plt.savefig(stats_folder + '/5est_subject_' +str(i)+'_Home-AHA.png', dpi = 500)
     plt.close()
     #############################################################
     
