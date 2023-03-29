@@ -29,7 +29,7 @@ y = metadata['AHA'].values
 
 # Assuming you have your dataset as numpy array X and target y
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
 
 # Initialize the linear regression model
 model = LinearRegression()
@@ -44,8 +44,8 @@ y_pred = model.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
-print("Mean squared error: {:.2f}".format(mse))
-print("R-squared score: {:.2f}".format(r2))
+print("Mean squared error: ",(mse))
+print("R-squared score: ",(r2))
 
 # Plot the data points
 plt.scatter(X, y)
