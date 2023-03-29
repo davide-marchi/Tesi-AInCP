@@ -35,7 +35,7 @@ best_estimators_df = pd.read_csv('best_estimators_results.csv', index_col=0).sor
 #estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.975) & (best_estimators_df['window_size'] == 600)].iterrows()]
 #estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] == 1) & (best_estimators_df['method'] == 'difference')].iterrows()]
 
-estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.954) & (best_estimators_df['window_size'] == 300)].iterrows()]
+estimators_specs_list = [row for index, row in best_estimators_df[(best_estimators_df['mean_test_score'] >= 0.939) & (best_estimators_df['window_size'] == 300)].iterrows()]
 
 
 print('Expected estimators: ',len(estimators_specs_list))
@@ -68,7 +68,9 @@ if not(os.path.exists(reg_path)):
 regressor = jl.load(reg_path)
 print('REGRESSOR READY')
 
-stats_folder = 'week_stats'
+sample_size = estimators_list[0]['window_size']
+
+stats_folder = 'week_stats_' + str(sample_size) + '_' + str(len(estimators_list)) + 'est'
 os.makedirs(stats_folder, exist_ok=True)
 if not os.path.exists('timestamps_list'):
     start = datetime.datetime(2023, 1, 1)
@@ -106,6 +108,11 @@ for i in range (1, metadata.shape[0]+1):
     predicted_aha = regressor.predict(np.array([hp_tot_list]))[0]
     predicted_aha = 100 if predicted_aha > 100 else predicted_aha
     predicted_aha_list.append(predicted_aha)
+
+    temp_metadata = metadata.iloc[i-1]
+    temp_metadata['healthy_percentage'] = hp_tot_list
+    temp_metadata['predicted_aha'] = predicted_aha
+    temp_metadata.to_frame().T.to_csv(stats_folder + '/predictions_dataframe_' + str(i) + '.csv', index = False)
 
     print('Patient ', i)
     print(' - AHA:     ', real_aha)
@@ -213,7 +220,7 @@ for i in range (1, metadata.shape[0]+1):
     #############################################################
     
     plt.savefig(stats_folder + '/subject_' +str(i)+'.png')
-    
+
     if(plot_show == True):
         plt.show() 
     plt.close()

@@ -20,6 +20,15 @@ metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'], axis=1, inplace=True)
 
 
+composed_dataframe = pd.DataFrame()
+# Sperimentale per concatenare i CSV contenenti series
+for i in range(1, 7):
+    composed_dataframe = pd.concat([composed_dataframe, pd.read_csv('week_stats_300_1est/predictions_dataframe_' + str(i) +'.csv', index_col = False)])
+
+print(composed_dataframe)
+exit(0)
+
+
 predictions_dataframe = pd.read_csv('week_stats/predictions_dataframe.csv', index_col=0)
 
 predictions_dataframe['CPI'] = [float(string.strip('[]')) for string in predictions_dataframe['healthy_percentage']]
