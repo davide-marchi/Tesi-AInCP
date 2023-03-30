@@ -225,10 +225,10 @@ for i in range (1, metadata.shape[0]+1):
         plt.show() 
     plt.close()
 
-metadata['healthy_percentage'] = healthy_percentage
-metadata['predicted_aha'] = predicted_aha_list
-
-metadata.to_csv(stats_folder + '/predictions_dataframe.csv')
+if len(healthy_percentage) == metadata.shape[0] and len(predicted_aha_list) == metadata.shape[0]:
+    metadata['healthy_percentage'] = healthy_percentage
+    metadata['predicted_aha'] = predicted_aha_list
+    metadata.to_csv(stats_folder + '/predictions_dataframe.csv')
 
 #metadata.plot.scatter(x='healthy_percentage', y='AHA', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AHA.png')
 #metadata.plot.scatter(x='healthy_percentage', y='AI_week', c='MACS', colormap='viridis').get_figure().savefig(stats_folder + 'plot_healthyPerc_AI_week.png')

@@ -4,6 +4,13 @@ from sklearn.metrics import mean_squared_error, r2_score
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import json
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import ShuffleSplit
+import numpy as np
+from sklearn.model_selection import KFold
+from sklearn.model_selection import RepeatedKFold
+
 
 if os.getlogin() == 'david':
     data_folder = 'C:/Users/david/Documents/University/Tesi/Python AInCP/only AC/'
@@ -22,48 +29,58 @@ metadata.drop(['age_aha', 'gender', 'dom', 'date AHA', 'start AHA', 'stop AHA'],
 
 composed_dataframe = pd.DataFrame()
 # Sperimentale per concatenare i CSV contenenti series
-for i in range(1, 7):
-    composed_dataframe = pd.concat([composed_dataframe, pd.read_csv('week_stats_300_1est/predictions_dataframe_' + str(i) +'.csv', index_col = False)])
+for i in range(1, metadata.shape[0] + 1):
+    composed_dataframe = pd.concat([composed_dataframe, pd.read_csv('week_stats_300_5est/predictions_dataframe_' + str(i) +'.csv', index_col = False)])
 
-print(composed_dataframe)
-exit(0)
+#print(composed_dataframe)
+
+#composed_dataframe['CPI_list'] = [json.loads(string) for string in composed_dataframe['healthy_percentage']]
+CPI_list = [json.loads(string) for string in composed_dataframe['healthy_percentage']]
+composed_dataframe.drop(['healthy_percentage'], axis=1, inplace=True)
+
+#print(composed_dataframe)
+
+print(type(CPI_list))
+print(type(CPI_list[0]))
+print(type(CPI_list[0][0]))
+
+X = np.array(CPI_list)
+y = composed_dataframe['AHA'].values
+
+#print(X)
+#print(type(X))
+#print(X.shape)
+#print(X[0])
+#print(type(X[0]))
+#print('---')
+#print(y)
+#print(type(y))
 
 
-predictions_dataframe = pd.read_csv('week_stats/predictions_dataframe.csv', index_col=0)
+#print(composed_dataframe['CPI_list'].values[0])
+#print(type(composed_dataframe['CPI_list'].values[0]))
+#print(type(composed_dataframe['CPI_list'].values[0][0]))
 
-predictions_dataframe['CPI'] = [float(string.strip('[]')) for string in predictions_dataframe['healthy_percentage']]
-
-X = predictions_dataframe[['CPI']].values
-y = metadata['AHA'].values
-
-# Assuming you have your dataset as numpy array X and target y
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
-
-# Initialize the linear regression model
 model = LinearRegression()
 
-# Fit the model on the training data
-model.fit(X_train, y_train)
+#cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
+#kf = KFold(n_splits=5, shuffle=True)
 
-# Make predictions on the test data
-y_pred = model.predict(X_test)
+rkf = RepeatedKFold(n_splits=5, n_repeats=1000)
 
-# Calculate the mean squared error and R-squared score for the predictions
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+score = cross_val_score(model, X, y, cv=rkf)
 
-print("Mean squared error: ",(mse))
-print("R-squared score: ",(r2))
+print(score)
+print(np.average(score))
+print(score.mean())
 
-# Plot the data points
-plt.scatter(X, y)
+model.fit(X, y)
 
-# Plot the regression line
-plt.plot(X, model.predict(X), color='red')
+plt.scatter(composed_dataframe['AHA'].values, model.predict(X))
 
-# Add labels and show the plot
-plt.xlabel('healthy_percentage')
-plt.ylabel('AHA')
+plt.grid()
+plt.xlim([0, 120])
+plt.ylim([0, 120])
+
 plt.show()
 plt.close()
