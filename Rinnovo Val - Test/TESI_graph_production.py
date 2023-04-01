@@ -26,7 +26,7 @@ os.chdir("./Rinnovo Val - Test")
 
 metadata = pd.read_excel(data_folder + 'metadata2022_04.xlsx')
 
-subject = 35
+subject = 24
 
 df = pd.read_csv(data_folder + 'data/'+ str(subject) + '_AHA_1sec.csv')
 
@@ -61,7 +61,7 @@ plt.close()
 
 plt.plot(elaborate_magnitude('difference', magnitude_D, magnitude_ND))
 plt.xlabel("Secondi")
-plt.ylabel("Differenza tra magnitudo")
+plt.ylabel("Differenza magnitudo")
 plt.gcf().set_size_inches(8, 2)
 plt.tight_layout()
 plt.savefig('Immagini_tesi/Preprocessing/AHA_' + str(subject) +'_Difference.png', dpi = 500)
