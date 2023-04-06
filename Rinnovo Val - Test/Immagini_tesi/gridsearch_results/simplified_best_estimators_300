@@ -1,0 +1,13 @@
+,method,model_type,params,mean_test_score,std_test_score
+9,ai,TimeSeriesKMedoids,"{'init_algorithm': 'forgy', 'metric': 'euclidean', 'n_clusters': 2}",0.955,0.024
+8,ai,TimeSeriesKMeans,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'dtw', 'n_clusters': 2}",0.95,0.023
+2,concat,BOSSEnsemble,{'feature_selection': 'none'},0.943,0.053
+4,difference,TimeSeriesKMeans,"{'averaging_method': 'mean', 'init_algorithm': 'kmeans++', 'metric': 'dtw', 'n_clusters': 2}",0.94,0.043
+7,difference,ShapeDTW,{'shape_descriptor_function': 'paa'},0.939,0.047
+10,ai,BOSSEnsemble,{'feature_selection': 'none'},0.938,0.043
+5,difference,TimeSeriesKMedoids,"{'init_algorithm': 'forgy', 'metric': 'dtw', 'n_clusters': 2}",0.933,0.037
+11,ai,ShapeDTW,{'shape_descriptor_function': 'paa'},0.933,0.026
+6,difference,BOSSEnsemble,{'feature_selection': 'none'},0.928,0.045
+3,concat,ShapeDTW,{'shape_descriptor_function': 'paa'},0.809,0.045
+0,concat,TimeSeriesKMeans,"{'averaging_method': 'mean', 'init_algorithm': 'forgy', 'metric': 'euclidean', 'n_clusters': 2}",0.732,0.184
+1,concat,TimeSeriesKMedoids,"{'init_algorithm': 'forgy', 'metric': 'dtw', 'n_clusters': 2}",0.67,0.096

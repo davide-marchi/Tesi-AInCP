@@ -1,0 +1,64 @@
+Y_ai        = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP e poi?
+Y_concat    = [1, 0, 1, 1, 0, 0, 1, 0, 0]
+Y_diff      = [1, 1, 0, 0, 0, 1, 0, 0, 0]
+
+finestra    =        ->|hp 0.41666|->         hp calcolato su più predictions (hp_multipred)
+
+Y_ensamble  = [1, 1, 1, 1, 0, 0, 1, 0, 0] -> HP_esamble e poi?
+finestra_ens=        ->|hp_ens 0.5|->
+
+
+
+y_pred_l = [[[1, -1, 0, 1, -1], [1, -1, 1, 0, -1], [0, -1, 1, 1, -1]], [[1, -1, 0, 1, -1], [1, -1, 1, 0, -1], [0, -1, 1, 1, -1]]]
+            _________________________________________________________   ________________________________________________________
+                                    patient 1                         ,                      patient 2 ...
+
+
+-------------------------------------------------------------------------------------------------
+fare due funzioni :
+
+    def predict_samples(i, estimators) -> le sue predizioni e il suo hp
+        X=create_samples(i)
+        count_1 = 
+        count_meno_1 =
+        for es in estimators:
+            y_pred_l.append([es.predict(X)])
+            transform_and_count in 1, -1, 0
+        hp_tot = count1 / sum(count1,count-1)
+        
+        return y_pred_l, hp_tot
+
+    def train_regressor(estimators) -> crea file regressore
+        for i in 60 patients:
+            _, hp_tot= predict_samples(i, es)
+            hp_tot_l.append(hp_tot)
+
+        save(reg.fit(hp_tot, metadata['aha']))
+
+    main_test(): 
+        if(regressor does not exists) -> train_regressor(estimators)
+        for 60 patients:
+            predictions, hp_tot_list = predict_samples(i, es)
+            aha = regressor.predict([hp_tot_list])
+            plot_dashboard(predictions, aha, hp_tot_list)
+
+
+
+ ---------------------------------------------------------------------------
+
+criterio= [best_concat, best_ai, best_diff, best_mix, treshold]
+
+def build_ensemble(criterio):
+
+    #build query in base al criterio
+    switch 
+        -
+        -
+        -
+
+    append models in estimator list
+
+    return estimators_list
+
+
+

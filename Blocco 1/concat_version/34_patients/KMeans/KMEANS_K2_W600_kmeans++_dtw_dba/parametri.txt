@@ -1,0 +1,5 @@
+Total = 41655 seconds
+Trained on = 31800.0 seconds (76.34137558516385 % of total)
+Cutted out = 9855 seconds (23.658624414836154 % of total)
+
+inertia: 74747423.30414404

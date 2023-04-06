@@ -1,0 +1,9 @@
+{
+    "Best index": 0,
+    "Best score": 0.9511997047836328,
+    "Refit time": 30.514795303344727,
+    "Best params": {
+        "shape_descriptor_function": "raw"
+    },
+    "Hemi cluster": 1
+}

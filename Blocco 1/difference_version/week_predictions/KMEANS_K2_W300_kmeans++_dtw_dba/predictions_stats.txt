@@ -1,0 +1,4 @@
+Guessed patients: 40/60 (66.66666666666666%)
+Guessed hemiplegic patients: 14/34 (41.17647058823529%)
+Guessed healthy patients: 26/26 (100.0%)
+Uncertain patients: 0/60 (0.0%)

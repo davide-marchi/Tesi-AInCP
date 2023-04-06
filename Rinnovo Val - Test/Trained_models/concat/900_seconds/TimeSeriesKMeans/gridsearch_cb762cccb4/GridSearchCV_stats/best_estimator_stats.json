@@ -1,0 +1,12 @@
+{
+    "Best index": 0,
+    "Best score": 0.7548927875243665,
+    "Refit time": 0.31800270080566406,
+    "Best params": {
+        "averaging_method": "mean",
+        "init_algorithm": "kmeans++",
+        "metric": "euclidean",
+        "n_clusters": 2
+    },
+    "Hemi cluster": 0
+}

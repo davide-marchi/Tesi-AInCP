@@ -1,0 +1,8 @@
+{
+    "Best index": 0,
+    "Best score": 0.9155383666004209,
+    "Refit time": 135.26514053344727,
+    "Best params": {
+        "feature_selection": "chi2"
+    }
+}
